@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recipe Flowchart - Design Mockup</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #FFF8F0;
+    color: #2D1810;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .phone-frame {
+    width: 390px;
+    min-height: 700px;
+    background: #FFF8F0;
+    border: 2px solid #E8DCC8;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  }
+
+  .header {
+    background: #fff;
+    border-bottom: 1px solid #E8DCC8;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .back-arrow { color: #E07A3A; font-size: 20px; text-decoration: none; }
+  .header h1 { font-size: 18px; font-weight: 700; }
+  .category-badge {
+    margin-left: auto;
+    background: #F4E8D1;
+    color: #8B7355;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 99px;
+    font-weight: 500;
+  }
+
+  .meta-bar {
+    display: flex;
+    gap: 16px;
+    padding: 12px 20px;
+    background: #fff;
+    border-bottom: 1px solid #E8DCC8;
+    font-size: 13px;
+    color: #8B7355;
+  }
+  .meta-bar span { display: flex; align-items: center; gap: 4px; }
+
+  .section-title {
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #8B7355;
+    padding: 20px 20px 12px;
+  }
+
+  /* ── Flowchart ── */
+  .flow {
+    padding: 0 20px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .flow-step {
+    width: 100%;
+    background: #fff;
+    border: 1.5px solid #E8DCC8;
+    border-radius: 14px;
+    padding: 14px 16px;
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    transition: border-color 0.2s;
+  }
+
+  .flow-step:hover, .flow-step.active {
+    border-color: #E07A3A;
+    box-shadow: 0 2px 8px rgba(224,122,58,0.12);
+  }
+
+  .step-number {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    background: #E07A3A;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .flow-step.active .step-number {
+    background: #C45D22;
+  }
+
+  .step-text {
+    font-size: 15px;
+    line-height: 1.45;
+    padding-top: 3px;
+  }
+
+  /* Connector arrow between steps */
+  .connector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 32px;
+    justify-content: center;
+  }
+
+  .connector-line {
+    width: 2px;
+    height: 18px;
+    background: #E07A3A;
+  }
+
+  .connector-arrow {
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 7px solid #E07A3A;
+  }
+
+  /* ── Ingredients ── */
+  .ingredients {
+    padding: 0 20px 8px;
+  }
+
+  .ingredient-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #F4E8D1;
+    font-size: 14px;
+  }
+
+  .ingredient-row:last-child { border-bottom: none; }
+  .ingredient-name { font-weight: 500; }
+  .ingredient-qty { color: #8B7355; font-size: 13px; }
+
+  /* ── Labels ── */
+  .mockup-label {
+    text-align: center;
+    padding: 12px;
+    font-size: 11px;
+    color: #8B7355;
+    font-style: italic;
+    background: #F4E8D1;
+    margin: 0 20px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+  }
+
+  .design-notes {
+    max-width: 390px;
+    margin-top: 24px;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #E8DCC8;
+    border-radius: 16px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #2D1810;
+    margin-left: 24px;
+  }
+
+  .design-notes h2 { font-size: 16px; margin-bottom: 12px; color: #E07A3A; }
+  .design-notes li { margin-bottom: 6px; }
+</style>
+</head>
+<body>
+
+<!-- Phone mockup -->
+<div class="phone-frame">
+  <div class="header">
+    <a class="back-arrow" href="#">&#8592;</a>
+    <h1>Pasta Carbonara</h1>
+    <span class="category-badge">Main Dishes</span>
+  </div>
+
+  <div class="meta-bar">
+    <span>&#9202; Prep: 10 min</span>
+    <span>&#127859; Cook: 20 min</span>
+    <span>&#127861; Serves: 4</span>
+  </div>
+
+  <div class="section-title">Ingredients</div>
+  <div class="ingredients">
+    <div class="ingredient-row">
+      <span class="ingredient-name">Spaghetti</span>
+      <span class="ingredient-qty">400 g</span>
+    </div>
+    <div class="ingredient-row">
+      <span class="ingredient-name">Guanciale</span>
+      <span class="ingredient-qty">200 g</span>
+    </div>
+    <div class="ingredient-row">
+      <span class="ingredient-name">Egg yolks</span>
+      <span class="ingredient-qty">4</span>
+    </div>
+    <div class="ingredient-row">
+      <span class="ingredient-name">Pecorino Romano</span>
+      <span class="ingredient-qty">100 g</span>
+    </div>
+    <div class="ingredient-row">
+      <span class="ingredient-name">Black pepper</span>
+      <span class="ingredient-qty">to taste</span>
+    </div>
+  </div>
+
+  <div class="section-title">Steps</div>
+
+  <div class="mockup-label">Each step is a card connected by arrows &mdash; like a cooking pipeline</div>
+
+  <div class="flow">
+    <div class="flow-step active">
+      <div class="step-number">1</div>
+      <div class="step-text">Bring a large pot of salted water to a boil</div>
+    </div>
+
+    <div class="connector">
+      <div class="connector-line"></div>
+      <div class="connector-arrow"></div>
+    </div>
+
+    <div class="flow-step">
+      <div class="step-number">2</div>
+      <div class="step-text">Cut the guanciale into small strips and fry in a dry pan until crispy</div>
+    </div>
+
+    <div class="connector">
+      <div class="connector-line"></div>
+      <div class="connector-arrow"></div>
+    </div>
+
+    <div class="flow-step">
+      <div class="step-number">3</div>
+      <div class="step-text">Mix egg yolks with grated pecorino and plenty of black pepper</div>
+    </div>
+
+    <div class="connector">
+      <div class="connector-line"></div>
+      <div class="connector-arrow"></div>
+    </div>
+
+    <div class="flow-step">
+      <div class="step-number">4</div>
+      <div class="step-text">Cook spaghetti until al dente, reserve 1 cup of pasta water before draining</div>
+    </div>
+
+    <div class="connector">
+      <div class="connector-line"></div>
+      <div class="connector-arrow"></div>
+    </div>
+
+    <div class="flow-step">
+      <div class="step-number">5</div>
+      <div class="step-text">Toss hot pasta into the guanciale pan (heat OFF), then quickly stir in the egg mixture</div>
+    </div>
+
+    <div class="connector">
+      <div class="connector-line"></div>
+      <div class="connector-arrow"></div>
+    </div>
+
+    <div class="flow-step">
+      <div class="step-number">6</div>
+      <div class="step-text">Add pasta water a splash at a time until creamy. Serve immediately with extra pecorino</div>
+    </div>
+  </div>
+</div>
+
+<!-- Design notes alongside -->
+<div class="design-notes">
+  <h2>Design Notes</h2>
+  <ul>
+    <li><strong>Vertical flow</strong> — reads top to bottom like a timeline</li>
+    <li><strong>Connected nodes</strong> — orange arrows link each step to the next</li>
+    <li><strong>Numbered circles</strong> — quick visual anchor for where you are</li>
+    <li><strong>Tap highlight</strong> — hover/active state (orange border) so you can track your current step while cooking</li>
+    <li><strong>Mobile-first</strong> — sized for phone, scrolls naturally</li>
+    <li><strong>Ingredients up top</strong> — check what you need before you start the flow</li>
+  </ul>
+  <br>
+  <p>This is the core concept. We can later add:<br>
+  &bull; Tap a step to "mark done" (greys it out)<br>
+  &bull; Timer buttons on steps that mention time<br>
+  &bull; Photo per step (optional)</p>
+</div>
+
+</body>
+</html>
