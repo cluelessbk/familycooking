@@ -35,6 +35,8 @@ export default function NewRecipePage() {
     { name: "", quantity: "", unit: "" },
   ]);
   const [steps, setSteps] = useState<StepRow[]>([{ instruction: "" }]);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/categories")
@@ -70,6 +72,16 @@ export default function NewRecipePage() {
     );
   }
 
+  function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0] ?? null;
+    setPhotoFile(file);
+    if (file) {
+      setPhotoPreview(URL.createObjectURL(file));
+    } else {
+      setPhotoPreview(null);
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!title.trim()) {
@@ -80,7 +92,22 @@ export default function NewRecipePage() {
     setSubmitting(true);
     setError(null);
 
+    let photoUrl: string | undefined;
+    if (photoFile) {
+      const fd = new FormData();
+      fd.append("file", photoFile);
+      const uploadRes = await fetch("/api/upload", { method: "POST", body: fd });
+      if (!uploadRes.ok) {
+        setError("Photo upload failed.");
+        setSubmitting(false);
+        return;
+      }
+      const { url } = await uploadRes.json();
+      photoUrl = url;
+    }
+
     const body = {
+      photoUrl,
       title: title.trim(),
       description: description.trim() || undefined,
       categoryId: categoryId || undefined,
@@ -221,6 +248,27 @@ export default function NewRecipePage() {
               />
             </div>
           </div>
+        </section>
+
+        {/* Photo */}
+        <section className="bg-card rounded-xl border border-border p-5 space-y-4">
+          <h2 className="font-semibold text-foreground">Photo</h2>
+          {photoPreview && (
+            <img
+              src={photoPreview}
+              alt="Preview"
+              className="w-full h-48 object-cover rounded-lg"
+            />
+          )}
+          <label className="block">
+            <span className="sr-only">Choose photo</span>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handlePhotoChange}
+              className="block w-full text-sm text-muted file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-secondary file:text-foreground hover:file:bg-border transition-colors cursor-pointer"
+            />
+          </label>
         </section>
 
         {/* Ingredients */}

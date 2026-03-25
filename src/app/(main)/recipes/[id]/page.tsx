@@ -54,10 +54,18 @@ export default async function RecipeDetailPage({
         </div>
       </div>
 
-      {/* Photo placeholder */}
-      <div className="w-full h-48 bg-secondary rounded-xl flex items-center justify-center">
-        <span className="text-5xl">🍽️</span>
-      </div>
+      {/* Photo */}
+      {recipe.photoUrl ? (
+        <img
+          src={recipe.photoUrl}
+          alt={recipe.title}
+          className="w-full h-48 object-cover rounded-xl"
+        />
+      ) : (
+        <div className="w-full h-48 bg-secondary rounded-xl flex items-center justify-center">
+          <span className="text-5xl">🍽️</span>
+        </div>
+      )}
 
       {/* Meta info */}
       <div className="grid grid-cols-3 gap-3">

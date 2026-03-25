@@ -12,6 +12,7 @@ interface Recipe {
   id: string;
   title: string;
   description: string | null;
+  photoUrl: string | null;
   servings: number | null;
   prepTime: number | null;
   cookTime: number | null;
@@ -118,10 +119,18 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
       href={`/recipes/${recipe.id}`}
       className="block p-5 bg-card rounded-xl border border-border hover:border-primary hover:shadow-md transition-all"
     >
-      {/* Photo placeholder */}
-      <div className="w-full h-32 bg-secondary rounded-lg mb-4 flex items-center justify-center">
-        <span className="text-3xl">🍽️</span>
-      </div>
+      {/* Photo */}
+      {recipe.photoUrl ? (
+        <img
+          src={recipe.photoUrl}
+          alt={recipe.title}
+          className="w-full h-32 object-cover rounded-lg mb-4"
+        />
+      ) : (
+        <div className="w-full h-32 bg-secondary rounded-lg mb-4 flex items-center justify-center">
+          <span className="text-3xl">🍽️</span>
+        </div>
+      )}
 
       <div className="space-y-2">
         {recipe.category && (

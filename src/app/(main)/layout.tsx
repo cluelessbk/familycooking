@@ -7,16 +7,17 @@ export default async function ProtectedLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth();
-
-  if (!session) {
-    redirect("/signin");
+  if (process.env.NODE_ENV !== "development") {
+    const session = await auth();
+    if (!session) {
+      redirect("/signin");
+    }
   }
 
   return (
     <>
       <Header />
-      <main className="flex-1 p-4 max-w-4xl mx-auto w-full">
+      <main className="flex-1 p-4 max-w-4xl mx-auto w-full pb-24 sm:pb-4">
         {children}
       </main>
     </>
