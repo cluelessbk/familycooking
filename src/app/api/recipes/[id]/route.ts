@@ -29,7 +29,7 @@ export async function PUT(
 ) {
   const { id } = await params;
   const body = await request.json();
-  const { title, description, categoryId, servings, prepTime, cookTime, ingredients, steps } = body;
+  const { title, description, photoUrl, categoryId, servings, prepTime, cookTime, ingredients, steps } = body;
 
   if (!title) {
     return Response.json({ error: "Title is required" }, { status: 400 });
@@ -44,6 +44,7 @@ export async function PUT(
     data: {
       title,
       description: description ?? null,
+      photoUrl: photoUrl ?? null,
       categoryId: categoryId ?? null,
       servings: servings ? Number(servings) : null,
       prepTime: prepTime ? Number(prepTime) : null,

@@ -23,6 +23,7 @@ export default function RecipesPage() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -44,6 +45,15 @@ export default function RecipesPage() {
       });
   }, [activeCategoryId]);
 
+  const filteredRecipes = recipes.filter((r) => {
+    const q = search.toLowerCase();
+    if (!q) return true;
+    return (
+      r.title.toLowerCase().includes(q) ||
+      (r.description ?? "").toLowerCase().includes(q)
+    );
+  });
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -56,6 +66,15 @@ export default function RecipesPage() {
           + Добави рецепта
         </Link>
       </div>
+
+      {/* Search */}
+      <input
+        type="text"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Търси рецепта..."
+        className="w-full border border-border rounded-lg px-4 py-2.5 bg-background text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+      />
 
       {/* Category filters */}
       <div className="flex flex-wrap gap-2">
@@ -89,7 +108,7 @@ export default function RecipesPage() {
       {/* Recipes grid */}
       {loading ? (
         <p className="text-muted text-sm">Зареждане...</p>
-      ) : recipes.length === 0 ? (
+      ) : filteredRecipes.length === 0 ? (
         <div className="text-center py-16">
           <p className="text-muted mb-4">Няма рецепти.</p>
           <Link
@@ -101,7 +120,7 @@ export default function RecipesPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {recipes.map((recipe) => (
+          {filteredRecipes.map((recipe) => (
             <RecipeCard key={recipe.id} recipe={recipe} />
           ))}
         </div>

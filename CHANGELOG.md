@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.6.0] - 2026-03-26
+
+### Added
+- **Recipe photo upload fix** — API routes now save `photoUrl` to the database on create and edit; previously the URL was silently dropped
+- **Better upload error messages** — upload failures now show the actual error from Vercel Blob instead of a generic message
+- **Recipe search** — search bar on the recipes page filters by title and description as you type
+- **Cancel button** — added to both new and edit recipe forms for easy navigation back
+- **Bulk recipe seeding** — `scripts/seed-all-recipes.ts` seeds 22 recipes from parsed template file
+- **New "Хляб" category** — for bread-related recipes (Хляб, Питки за бургери)
+- **All family recipes parsed** — 23 recipes converted to structured template format (`allrecepies_parsed.txt`), 17 complete + 6 marked as incomplete for manual review
+
+### Fixed
+- Photo upload returned "Unauthorized" during local testing due to auth check when auth is disabled; commented out with TODO to re-enable for production
+- Vercel Blob store recreated with public access (old private store blocked uploads)
+
 ## [0.5.0] - 2026-03-26
 
 ### Added

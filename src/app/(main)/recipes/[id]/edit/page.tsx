@@ -125,12 +125,13 @@ export default function EditRecipePage() {
       const fd = new FormData();
       fd.append("file", photoFile);
       const uploadRes = await fetch("/api/upload", { method: "POST", body: fd });
+      const uploadData = await uploadRes.json();
       if (!uploadRes.ok) {
-        setError("Photo upload failed.");
+        setError(`Photo upload failed: ${uploadData.error ?? "unknown error"}`);
         setSubmitting(false);
         return;
       }
-      const { url } = await uploadRes.json();
+      const { url } = uploadData;
       photoUrl = url;
     }
 
@@ -406,13 +407,22 @@ export default function EditRecipePage() {
           <p className="text-accent text-sm font-medium">{error}</p>
         )}
 
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full bg-primary text-white rounded-lg py-3 font-semibold hover:bg-primary-dark transition-colors disabled:opacity-60"
-        >
-          {submitting ? "Saving..." : "Save Changes"}
-        </button>
+        <div className="flex gap-3">
+          <button
+            type="submit"
+            disabled={submitting}
+            className="flex-1 bg-primary text-white rounded-lg py-3 font-semibold hover:bg-primary-dark transition-colors disabled:opacity-60"
+          >
+            {submitting ? "Saving..." : "Save Changes"}
+          </button>
+          <button
+            type="button"
+            onClick={() => router.push(`/recipes/${id}`)}
+            className="flex-1 border border-border text-foreground rounded-lg py-3 font-semibold hover:bg-secondary transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
       </form>
     </div>
   );
