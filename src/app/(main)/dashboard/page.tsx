@@ -6,31 +6,31 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-foreground">
-        Welcome to FamilyCooking
+        Добре дошли във FamilyCooking
       </h1>
       <p className="text-muted">
-        Signed in as <strong>{session?.user?.email}</strong>
+        Влезли сте като <strong>{session?.user?.email}</strong>
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <DashboardCard
-          title="Recipes"
-          description="Browse and add your family recipes"
+          title="Рецепти"
+          description="Разгледайте и добавете семейни рецепти"
           href="/recipes"
         />
         <DashboardCard
-          title="Meal Plan"
-          description="Plan your meals for the week"
+          title="Планер"
+          description="Планирайте храненията за седмицата"
           href="/planner"
         />
         <DashboardCard
-          title="Grocery List"
-          description="Your shopping list for the week"
+          title="Пазаруване"
+          description="Списъкът ви за пазаруване за седмицата"
           href="/groceries"
         />
         <DashboardCard
-          title="Today"
-          description="See what's cooking today"
+          title="Днес"
+          description="Вижте какво е планирано за днес"
           href="/today"
         />
       </div>
