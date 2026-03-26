@@ -132,7 +132,6 @@ model PlannedMeal {
   mealSlot   MealSlot @relation(fields: [mealSlotId], references: [id])
   recipe     Recipe   @relation(fields: [recipeId], references: [id])
 
-  @@unique([date, mealSlotId])
 }
 
 model GroceryList {

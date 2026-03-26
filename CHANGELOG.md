@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.4.0] - 2026-03-26
+
+### Added
+- **Weekly meal planner** (`/planner`) — grid of Mon–Sun × meal slots with prev/next week navigation
+- **Daily view** (`/today`) — shows today's planned meals with links to recipes
+- **Multiple recipes per slot** — removed unique constraint; can assign e.g. salad + soup to the same dinner slot
+- **Recipe picker modal** — searchable list in the planner; includes "Нова рецепта" button opening `/recipes/new` in a new tab
+- **Planner API** — `GET /api/planner`, `POST /api/planner/meals`, `DELETE /api/planner/meals/[mealId]`
+- **Meal slot seed script** (`scripts/seed-meal-slots.ts`) — seeds Закуска, Обяд, Вечеря
+
+### Fixed
+- `db.ts` used `??` to fall back to local SQLite URL, which silently failed when `TURSO_DATABASE_URL=""` (empty string); changed to `||`
+
+### Changed
+- All UI text translated to Bulgarian across nav, recipes page, and planner
+- Category names in DB translated to Bulgarian (Закуски, Супи, Салати, Основни ястия, Гарнитури, Десерти, Снаксове, Напитки)
+
 ## [0.3.0] - 2026-03-25
 
 ### Added

@@ -48,12 +48,12 @@ export default function RecipesPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">Recipes</h1>
+        <h1 className="text-2xl font-bold text-foreground">Рецепти</h1>
         <Link
           href="/recipes/new"
           className="bg-primary text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-primary-dark transition-colors"
         >
-          + Add Recipe
+          + Добави рецепта
         </Link>
       </div>
 
@@ -67,7 +67,7 @@ export default function RecipesPage() {
               : "bg-secondary text-muted hover:text-foreground"
           }`}
         >
-          All
+          Всички
         </button>
         {categories.map((cat) => (
           <button
@@ -88,15 +88,15 @@ export default function RecipesPage() {
 
       {/* Recipes grid */}
       {loading ? (
-        <p className="text-muted text-sm">Loading recipes...</p>
+        <p className="text-muted text-sm">Зареждане...</p>
       ) : recipes.length === 0 ? (
         <div className="text-center py-16">
-          <p className="text-muted mb-4">No recipes yet.</p>
+          <p className="text-muted mb-4">Няма рецепти.</p>
           <Link
             href="/recipes/new"
             className="bg-primary text-white rounded-lg px-5 py-2.5 text-sm font-medium hover:bg-primary-dark transition-colors"
           >
-            Add your first recipe
+            Добави първата рецепта
           </Link>
         </div>
       ) : (
@@ -143,8 +143,8 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
           <p className="text-sm text-muted line-clamp-2">{recipe.description}</p>
         )}
         <div className="flex items-center gap-3 text-xs text-muted pt-1">
-          {totalTime > 0 && <span>⏱ {totalTime} min</span>}
-          {recipe.servings && <span>👥 {recipe.servings} servings</span>}
+          {totalTime > 0 && <span>⏱ {totalTime} мин</span>}
+          {recipe.servings && <span>👥 {recipe.servings} порции</span>}
         </div>
       </div>
     </Link>

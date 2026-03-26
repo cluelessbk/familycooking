@@ -19,13 +19,13 @@ export function Header() {
           {/* Desktop nav */}
           <nav className="hidden sm:flex items-center gap-4">
             <Link href="/recipes" className="text-sm text-muted hover:text-foreground transition-colors">
-              Recipes
+              Рецепти
             </Link>
             <Link href="/planner" className="text-sm text-muted hover:text-foreground transition-colors">
-              Planner
+              Планер
             </Link>
             <Link href="/groceries" className="text-sm text-muted hover:text-foreground transition-colors">
-              Groceries
+              Пазаруване
             </Link>
             <button
               onClick={() => signOut({ callbackUrl: "/signin" })}
@@ -55,7 +55,7 @@ export function Header() {
             }`}
           >
             <span className="text-xl">🍽️</span>
-            Recipes
+            Рецепти
           </Link>
           <Link
             href="/planner"
@@ -64,7 +64,7 @@ export function Header() {
             }`}
           >
             <span className="text-xl">📅</span>
-            Planner
+            Планер
           </Link>
           <Link
             href="/groceries"
@@ -73,7 +73,7 @@ export function Header() {
             }`}
           >
             <span className="text-xl">🛒</span>
-            Groceries
+            Пазаруване
           </Link>
         </div>
       </nav>

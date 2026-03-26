@@ -10,14 +10,14 @@ const adapter = new PrismaLibSql({ url: "file:./prisma/dev.db" });
 const prisma = new PrismaClient({ adapter });
 
 const PRESET_CATEGORIES = [
-  "Breakfasts",
-  "Soups",
-  "Salads",
-  "Main Dishes",
-  "Side Dishes",
-  "Desserts",
-  "Snacks",
-  "Drinks",
+  "Закуски",
+  "Супи",
+  "Салати",
+  "Основни ястия",
+  "Гарнитури",
+  "Десерти",
+  "Снаксове",
+  "Напитки",
 ];
 
 async function seed() {
