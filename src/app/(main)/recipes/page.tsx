@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 interface Category {
@@ -19,10 +20,13 @@ interface Recipe {
   category: Category | null;
 }
 
-export default function RecipesPage() {
+function RecipesPageContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const activeCategoryId = searchParams.get("category");
+
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -44,6 +48,14 @@ export default function RecipesPage() {
         setLoading(false);
       });
   }, [activeCategoryId]);
+
+  function selectCategory(id: string | null) {
+    if (id) {
+      router.replace(`/recipes?category=${id}`);
+    } else {
+      router.replace("/recipes");
+    }
+  }
 
   const filteredRecipes = recipes.filter((r) => {
     const q = search.toLowerCase();
@@ -79,7 +91,7 @@ export default function RecipesPage() {
       {/* Category filters */}
       <div className="flex flex-wrap gap-2">
         <button
-          onClick={() => setActiveCategoryId(null)}
+          onClick={() => selectCategory(null)}
           className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
             activeCategoryId === null
               ? "bg-primary text-white"
@@ -91,9 +103,7 @@ export default function RecipesPage() {
         {categories.map((cat) => (
           <button
             key={cat.id}
-            onClick={() =>
-              setActiveCategoryId(activeCategoryId === cat.id ? null : cat.id)
-            }
+            onClick={() => selectCategory(activeCategoryId === cat.id ? null : cat.id)}
             className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
               activeCategoryId === cat.id
                 ? "bg-primary text-white"
@@ -167,5 +177,13 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
         </div>
       </div>
     </Link>
+  );
+}
+
+export default function RecipesPage() {
+  return (
+    <Suspense>
+      <RecipesPageContent />
+    </Suspense>
   );
 }

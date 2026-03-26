@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { DeleteRecipeButton } from "./DeleteRecipeButton";
 import { FlowchartSteps } from "@/components/recipes/flowchart-steps";
+import { AddToMealPlanButton } from "@/components/recipes/AddToMealPlanButton";
+import { BackButton } from "@/components/recipes/BackButton";
 
 export default async function RecipeDetailPage({
   params,
@@ -29,9 +31,7 @@ export default async function RecipeDetailPage({
   return (
     <div className="space-y-6 pb-12">
       {/* Back link */}
-      <Link href="/recipes" className="text-sm text-muted hover:text-foreground transition-colors">
-        ← Back to Recipes
-      </Link>
+      <BackButton />
 
       {/* Title & actions */}
       <div className="flex items-start justify-between gap-4">
@@ -44,6 +44,7 @@ export default async function RecipeDetailPage({
           <h1 className="text-2xl font-bold text-foreground">{recipe.title}</h1>
         </div>
         <div className="flex gap-2 flex-shrink-0">
+          <AddToMealPlanButton recipeId={id} />
           <Link
             href={`/recipes/${id}/edit`}
             className="bg-secondary text-foreground rounded-lg px-4 py-2 text-sm font-medium hover:bg-border transition-colors"

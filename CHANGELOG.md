@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.7.0] - 2026-03-27
+
+### Added
+- **"Add to meal plan" button** on recipe detail page — pick a date and meal slot to add a recipe directly without going to the planner
+- **Dashboard today's meals** — dashboard now shows today's planned meals inline with links to each recipe; falls back to a prompt when nothing is planned
+
+### Fixed
+- **"Back to Recipes" navigation** — category filter now stored in URL (`/recipes?category=<id>`), so going back from a recipe correctly restores the previously selected category
+
 ## [0.6.0] - 2026-03-26
 
 ### Added

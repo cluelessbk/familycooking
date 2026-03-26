@@ -6,4 +6,3 @@
 2. **No tests exist** — the project has no test suite; `npm run build` is the only verification step available
 3. **Recipe upload via curl mangles Cyrillic** — use Prisma seed scripts (like `seed-recipe1.ts`) instead of curl for seeding Bulgarian text
 4. **Upload route auth disabled for local testing** — `src/app/api/upload/route.ts` has auth check commented out; must re-enable before production deploy
-5. **Grocery list range quantities** — ingredient ranges like "2-3" need code to take the higher number for shopping list generation
