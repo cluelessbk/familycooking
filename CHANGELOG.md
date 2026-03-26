@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.5.0] - 2026-03-26
+
+### Added
+- **Grocery list page** (`/groceries`) — week selector with prev/next navigation
+- **Auto-generate from meal plan** — pulls all planned meals for the week, flattens ingredients, merges by name + unit (summing quantities), creates the list in one click
+- **Regenerate** — updates auto-generated items while preserving manually added ones
+- **Check-off items** — tap checkbox to strike through items while shopping; optimistic UI update
+- **Manual add** — form at the bottom to add any item with optional quantity and unit
+- **Remove items** — × button on every item
+- **Grocery API routes** — `GET /api/groceries`, `POST /api/groceries/generate`, `POST /api/groceries/[listId]/items`, `PATCH+DELETE /api/groceries/items/[itemId]`
+- **First recipe seeded** — Нахут с пилешко added via Prisma seed script (curl encoding workaround)
+
 ## [0.4.0] - 2026-03-26
 
 ### Added

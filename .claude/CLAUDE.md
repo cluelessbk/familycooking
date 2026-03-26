@@ -6,4 +6,4 @@
 2. **No tests exist** — the project has no test suite; `npm run build` is the only verification step available
 3. **Bulk recipe import not yet built** — recipes will be converted to template format and seeded via script; pending user providing all recipes
 4. **Plain text recipe parser not built** — deferred from Phase 2; converts raw pasted text into structured ingredients/steps
-5. **`TURSO_DATABASE_URL=""` breaks db.ts** — fixed this session (`??` → `||`); must ensure production env var is set correctly before deploy
+5. **Recipe upload via curl mangles Cyrillic** — use Prisma seed scripts (like `seed-recipe1.ts`) instead of curl for seeding Bulgarian text
