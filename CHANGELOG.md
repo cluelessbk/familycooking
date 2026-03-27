@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.1] - 2026-03-28
+
+### Infrastructure
+- **Deployed to Vercel** — app is live at https://familycooking.vercel.app
+- **GitHub auto-deploy** — every push to master triggers an automatic Vercel deployment
+- **Production database seeded** — categories (9) and meal slots (Закуска, Обяд, Вечеря) seeded into Turso
+- **All env vars configured** — AUTH_SECRET, TURSO credentials, RESEND_API_KEY, BLOB token, NEXTAUTH_URL all set as encrypted Vercel env vars
+- **Production seed script** — `scripts/seed-production.ts` for seeding any future fresh Turso database
+
 ## [1.0.0] - 2026-03-27
 
 ### Added
