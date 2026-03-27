@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.9.1] - 2026-03-27
+
+### Added
+- **Multi-user auth implementation plan** — detailed phase-by-phase plan saved to `IMPLEMENTATION-PLAN-AUTH.md`
+- **Plan.md updated** — Phase 5 fully checked off, new Phase 6 added covering OTP auth, households, data isolation, invite system
+
 ## [0.9.0] - 2026-03-27
 
 ### Added
