@@ -29,6 +29,9 @@ function RecipesPageContent() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const [addingCategory, setAddingCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [savingCategory, setSavingCategory] = useState(false);
 
   useEffect(() => {
     fetch("/api/categories")
@@ -48,6 +51,25 @@ function RecipesPageContent() {
         setLoading(false);
       });
   }, [activeCategoryId]);
+
+  async function saveCategory(e: React.FormEvent) {
+    e.preventDefault();
+    const name = newCategoryName.trim();
+    if (!name) return;
+    setSavingCategory(true);
+    const res = await fetch("/api/categories", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name }),
+    });
+    if (res.ok) {
+      const cat = await res.json();
+      setCategories((prev) => [...prev, cat]);
+      setNewCategoryName("");
+      setAddingCategory(false);
+    }
+    setSavingCategory(false);
+  }
 
   function selectCategory(id: string | null) {
     if (id) {
@@ -89,7 +111,7 @@ function RecipesPageContent() {
       />
 
       {/* Category filters */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 items-center">
         <button
           onClick={() => selectCategory(null)}
           className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
@@ -113,6 +135,40 @@ function RecipesPageContent() {
             {cat.name}
           </button>
         ))}
+
+        {addingCategory ? (
+          <form onSubmit={saveCategory} className="flex items-center gap-1">
+            <input
+              autoFocus
+              type="text"
+              value={newCategoryName}
+              onChange={(e) => setNewCategoryName(e.target.value)}
+              placeholder="Нова категория"
+              className="border border-primary rounded-full px-3 py-1.5 text-sm bg-background text-foreground focus:outline-none w-36"
+            />
+            <button
+              type="submit"
+              disabled={savingCategory || !newCategoryName.trim()}
+              className="px-3 py-1.5 rounded-full bg-primary text-white text-sm font-medium disabled:opacity-50 transition-colors"
+            >
+              {savingCategory ? "…" : "Запази"}
+            </button>
+            <button
+              type="button"
+              onClick={() => { setAddingCategory(false); setNewCategoryName(""); }}
+              className="px-2 py-1.5 rounded-full text-muted hover:text-foreground text-sm transition-colors"
+            >
+              ✕
+            </button>
+          </form>
+        ) : (
+          <button
+            onClick={() => setAddingCategory(true)}
+            className="px-3 py-1.5 rounded-full text-sm font-medium border border-dashed border-border text-muted hover:border-primary hover:text-primary transition-colors"
+          >
+            + Категория
+          </button>
+        )}
       </div>
 
       {/* Recipes grid */}
@@ -145,7 +201,7 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
 
   return (
     <Link
-      href={`/recipes/${recipe.id}`}
+      href={`/recipes/${recipe.id}?from=recipes`}
       className="block p-5 bg-card rounded-xl border border-border hover:border-primary hover:shadow-md transition-all"
     >
       {/* Photo */}

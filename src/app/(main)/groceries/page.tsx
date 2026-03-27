@@ -49,6 +49,7 @@ export default function GroceriesPage() {
   const [items, setItems] = useState<GroceryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
+  const [clearing, setClearing] = useState(false);
 
   // Manual add form state
   const [addName, setAddName] = useState("");
@@ -80,6 +81,14 @@ export default function GroceriesPage() {
     setList(data.list);
     setItems(data.items);
     setGenerating(false);
+  }
+
+  async function clearList() {
+    if (!list) return;
+    setClearing(true);
+    await fetch(`/api/groceries/${list.id}/items`, { method: "DELETE" });
+    setItems([]);
+    setClearing(false);
   }
 
   async function toggleChecked(item: GroceryItem) {
@@ -152,24 +161,39 @@ export default function GroceriesPage() {
         </button>
       </div>
 
-      {/* Generate button */}
-      <button
-        onClick={generate}
-        disabled={generating}
-        className="w-full py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-60"
-      >
-        {generating
-          ? "Генериране…"
-          : list
-          ? "Обнови от плана"
-          : "Генерирай от плана"}
-      </button>
+      {/* Generate / Clear buttons */}
+      <div className="flex gap-2">
+        <button
+          onClick={generate}
+          disabled={generating || clearing}
+          className="flex-1 py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-60"
+        >
+          {generating
+            ? "Генериране…"
+            : list
+            ? "Обнови от плана"
+            : "Генерирай от плана"}
+        </button>
+        {list && items.length > 0 && (
+          <button
+            onClick={clearList}
+            disabled={clearing || generating}
+            className="py-2.5 px-4 rounded-lg border border-accent text-accent text-sm font-medium hover:bg-accent/10 transition-colors disabled:opacity-60"
+          >
+            {clearing ? "…" : "Изчисти"}
+          </button>
+        )}
+      </div>
 
       {loading ? (
         <p className="text-center text-muted py-8">Зареждане…</p>
-      ) : items.length === 0 && !list ? (
+      ) : !list ? (
         <p className="text-center text-muted text-sm py-8">
           Няма списък за тази седмица. Натисни „Генерирай от плана" за да го създадеш.
+        </p>
+      ) : items.length === 0 ? (
+        <p className="text-center text-muted text-sm py-8">
+          Списъкът е празен. Добави продукти ръчно или обнови от плана.
         </p>
       ) : (
         <div className="space-y-1">
@@ -200,7 +224,7 @@ export default function GroceriesPage() {
               placeholder="Продукт"
               value={addName}
               onChange={(e) => setAddName(e.target.value)}
-              className="flex-1 border border-border rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:border-primary"
+              className="flex-1 min-w-0 border border-border rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:border-primary"
               required
             />
             <input
@@ -208,7 +232,7 @@ export default function GroceriesPage() {
               placeholder="Кол."
               value={addQty}
               onChange={(e) => setAddQty(e.target.value)}
-              className="w-20 border border-border rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:border-primary"
+              className="w-16 border border-border rounded-lg px-2 py-2 text-sm bg-background text-foreground focus:outline-none focus:border-primary"
               min="0"
               step="any"
             />
@@ -217,7 +241,7 @@ export default function GroceriesPage() {
               placeholder="Мярка"
               value={addUnit}
               onChange={(e) => setAddUnit(e.target.value)}
-              className="w-24 border border-border rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:border-primary"
+              className="w-20 border border-border rounded-lg px-2 py-2 text-sm bg-background text-foreground focus:outline-none focus:border-primary"
             />
           </div>
           <button

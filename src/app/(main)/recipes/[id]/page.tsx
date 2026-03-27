@@ -8,10 +8,16 @@ import { BackButton } from "@/components/recipes/BackButton";
 
 export default async function RecipeDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ from?: string }>;
 }) {
   const { id } = await params;
+  const { from } = await searchParams;
+
+  const backLabel = from === "today" ? "Назад към днес" : "Назад към рецептите";
+  const backHref = from === "today" ? "/today" : undefined;
 
   const recipe = await prisma.recipe.findUnique({
     where: { id },
@@ -31,7 +37,7 @@ export default async function RecipeDetailPage({
   return (
     <div className="space-y-6 pb-12">
       {/* Back link */}
-      <BackButton />
+      <BackButton label={backLabel} href={backHref} />
 
       {/* Title & actions */}
       <div className="flex flex-col gap-3">

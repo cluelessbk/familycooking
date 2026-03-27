@@ -1,5 +1,14 @@
 import { prisma } from "@/lib/db";
 
+export async function DELETE(
+  _request: Request,
+  { params }: { params: Promise<{ listId: string }> }
+) {
+  const { listId } = await params;
+  await prisma.groceryItem.deleteMany({ where: { groceryListId: listId } });
+  return Response.json({ ok: true });
+}
+
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ listId: string }> }

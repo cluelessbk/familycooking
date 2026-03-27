@@ -74,13 +74,18 @@ export default async function DashboardPage() {
               return (
                 <div key={slot.id} className="flex items-start gap-4 px-5 py-4">
                   <span className="w-20 shrink-0 text-sm text-muted pt-0.5">{slot.name}</span>
-                  <div className="flex flex-col gap-1">
-                    {meals.map((meal) => (
+                  <div className="flex flex-col gap-2 flex-1">
+                    {meals.map((meal, i) => (
                       <Link
                         key={meal.id}
-                        href={`/recipes/${meal.recipe.id}`}
-                        className="text-foreground font-medium hover:text-primary transition-colors text-sm"
+                        href={`/recipes/${meal.recipe.id}?from=today`}
+                        className={`flex items-start gap-2 text-foreground font-medium hover:text-primary transition-colors text-sm ${
+                          meals.length > 1 && i > 0 ? "pt-2 border-t border-border" : ""
+                        }`}
                       >
+                        {meals.length > 1 && (
+                          <span className="text-primary font-bold shrink-0 mt-0.5 text-sm">{i + 1}.</span>
+                        )}
                         {meal.recipe.title}
                       </Link>
                     ))}

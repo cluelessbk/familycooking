@@ -31,8 +31,9 @@ export default function TodayPage() {
       .then((data) => {
         setSlots(data.slots ?? []);
         setMeals(data.meals ?? []);
-        setLoading(false);
-      });
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   const todayStr = toISODate(new Date());
@@ -65,13 +66,18 @@ export default function TodayPage() {
                   <span className="text-sm font-medium text-muted">{slot.name}</span>
                 </div>
                 {slotMeals.length > 0 ? (
-                  <div className="flex flex-col gap-1">
-                    {slotMeals.map((meal) => (
+                  <div className="flex flex-col gap-2 flex-1">
+                    {slotMeals.map((meal, i) => (
                       <a
                         key={meal.id}
-                        href={`/recipes/${meal.recipe.id}`}
-                        className="text-foreground font-medium hover:text-primary transition-colors"
+                        href={`/recipes/${meal.recipe.id}?from=today`}
+                        className={`flex items-start gap-2 text-foreground font-medium hover:text-primary transition-colors ${
+                          slotMeals.length > 1 && i > 0 ? "pt-2 border-t border-border" : ""
+                        }`}
                       >
+                        {slotMeals.length > 1 && (
+                          <span className="text-primary font-bold shrink-0 mt-0.5 text-sm">{i + 1}.</span>
+                        )}
                         {meal.recipe.title}
                       </a>
                     ))}

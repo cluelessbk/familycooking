@@ -79,7 +79,7 @@ export function AddToMealPlanButton({ recipeId }: { recipeId: string }) {
   }
 
   return (
-    <div className="relative">
+    <>
       <button
         onClick={handleOpen}
         className="bg-primary text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-primary-dark transition-colors"
@@ -88,58 +88,66 @@ export function AddToMealPlanButton({ recipeId }: { recipeId: string }) {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-10 z-10 w-64 bg-card border border-border rounded-xl shadow-lg p-4 space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-foreground">Добави в плана</h3>
-            <button
-              onClick={() => setOpen(false)}
-              className="text-muted hover:text-foreground transition-colors text-lg leading-none"
-              aria-label="Close"
-            >
-              ✕
-            </button>
-          </div>
-
-          {success ? (
-            <p className="text-sm text-green-600 font-medium text-center py-2">Добавено!</p>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-3">
-              <div className="space-y-1">
-                <label className="text-xs font-medium text-muted">Дата</label>
-                <input
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  className="w-full border border-border rounded-lg px-3 py-2 bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-medium text-muted">Хранене</label>
-                <select
-                  value={slotId}
-                  onChange={(e) => setSlotId(e.target.value)}
-                  className="w-full border border-border rounded-lg px-3 py-2 bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                >
-                  {slots.map((s) => (
-                    <option key={s.id} value={s.id}>{s.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              {error && <p className="text-xs text-accent">{error}</p>}
-
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40"
+          onClick={() => setOpen(false)}
+        >
+          <div
+            className="w-full max-w-sm bg-card border border-border rounded-xl shadow-xl p-5 space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold text-foreground">Добави в плана</h3>
               <button
-                type="submit"
-                disabled={loading || !slotId}
-                className="w-full bg-primary text-white rounded-lg py-2 text-sm font-semibold hover:bg-primary-dark transition-colors disabled:opacity-60"
+                onClick={() => setOpen(false)}
+                className="text-muted hover:text-foreground transition-colors text-lg leading-none"
+                aria-label="Close"
               >
-                {loading ? "Добавяне..." : "Добави"}
+                ✕
               </button>
-            </form>
-          )}
+            </div>
+
+            {success ? (
+              <p className="text-sm text-green-600 font-medium text-center py-2">Добавено!</p>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-3">
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-foreground">Дата</label>
+                  <input
+                    type="date"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                    className="w-full border border-border rounded-lg px-3 py-2 bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-foreground">Хранене</label>
+                  <select
+                    value={slotId}
+                    onChange={(e) => setSlotId(e.target.value)}
+                    className="w-full border border-border rounded-lg px-3 py-2 bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  >
+                    {slots.map((s) => (
+                      <option key={s.id} value={s.id}>{s.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {error && <p className="text-xs text-accent">{error}</p>}
+
+                <button
+                  type="submit"
+                  disabled={loading || !slotId}
+                  className="w-full bg-primary text-white rounded-lg py-2.5 text-sm font-semibold hover:bg-primary-dark transition-colors disabled:opacity-60"
+                >
+                  {loading ? "Добавяне..." : "Добави"}
+                </button>
+              </form>
+            )}
+          </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

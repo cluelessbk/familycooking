@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useFitText } from "@/hooks/useFitText";
 import { useRouter } from "next/navigation";
 
 interface Category {
@@ -26,6 +27,7 @@ export default function NewRecipePage() {
 
   // Form fields
   const [title, setTitle] = useState("");
+  const titleRef = useFitText(title);
   const [description, setDescription] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [servings, setServings] = useState("");
@@ -163,6 +165,7 @@ export default function NewRecipePage() {
               Заглавие <span className="text-accent">*</span>
             </label>
             <input
+              ref={titleRef}
               id="title"
               type="text"
               value={title}
@@ -217,12 +220,12 @@ export default function NewRecipePage() {
                 value={servings}
                 onChange={(e) => setServings(e.target.value)}
                 placeholder="4"
-                className="w-full border border-border rounded-lg px-4 py-3 bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder:text-muted"
+                className="w-full border border-border rounded-lg px-3 py-3 bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder:text-muted"
               />
             </div>
             <div className="space-y-1">
               <label className="text-sm font-medium text-foreground" htmlFor="prepTime">
-                Подготовка (мин)
+                Подготовка
               </label>
               <input
                 id="prepTime"
@@ -230,13 +233,13 @@ export default function NewRecipePage() {
                 min="0"
                 value={prepTime}
                 onChange={(e) => setPrepTime(e.target.value)}
-                placeholder="15"
-                className="w-full border border-border rounded-lg px-4 py-3 bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder:text-muted"
+                placeholder="мин"
+                className="w-full border border-border rounded-lg px-3 py-3 bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder:text-muted"
               />
             </div>
             <div className="space-y-1">
               <label className="text-sm font-medium text-foreground" htmlFor="cookTime">
-                Готвене (мин)
+                Готвене
               </label>
               <input
                 id="cookTime"
@@ -244,8 +247,8 @@ export default function NewRecipePage() {
                 min="0"
                 value={cookTime}
                 onChange={(e) => setCookTime(e.target.value)}
-                placeholder="30"
-                className="w-full border border-border rounded-lg px-4 py-3 bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder:text-muted"
+                placeholder="мин"
+                className="w-full border border-border rounded-lg px-3 py-3 bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder:text-muted"
               />
             </div>
           </div>
@@ -261,13 +264,18 @@ export default function NewRecipePage() {
               className="w-full h-48 object-cover rounded-lg"
             />
           )}
-          <label className="block">
-            <span className="sr-only">Choose photo</span>
+          <label className="flex items-center gap-3 cursor-pointer">
+            <span className="shrink-0 px-4 py-2 rounded-lg bg-secondary border border-border text-sm font-medium text-foreground hover:bg-border transition-colors">
+              Избери снимка
+            </span>
+            <span className="text-sm text-muted truncate">
+              {photoFile ? photoFile.name : "Няма избран файл"}
+            </span>
             <input
               type="file"
               accept="image/*"
               onChange={handlePhotoChange}
-              className="block w-full text-sm text-muted file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-secondary file:text-foreground hover:file:bg-border transition-colors cursor-pointer"
+              className="sr-only"
             />
           </label>
         </section>
@@ -284,21 +292,21 @@ export default function NewRecipePage() {
                   value={ing.name}
                   onChange={(e) => updateIngredient(i, "name", e.target.value)}
                   placeholder="Съставка"
-                  className="flex-1 border border-border rounded-lg px-3 py-2 bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder:text-muted text-sm"
+                  className="flex-1 min-w-0 border border-border rounded-lg px-3 py-2 bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder:text-muted text-sm"
                 />
                 <input
                   type="number"
                   value={ing.quantity}
                   onChange={(e) => updateIngredient(i, "quantity", e.target.value)}
                   placeholder="Кол."
-                  className="w-20 border border-border rounded-lg px-3 py-2 bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder:text-muted text-sm"
+                  className="w-14 border border-border rounded-lg px-2 py-2 bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder:text-muted text-sm"
                 />
                 <input
                   type="text"
                   value={ing.unit}
                   onChange={(e) => updateIngredient(i, "unit", e.target.value)}
                   placeholder="Мярка"
-                  className="w-20 border border-border rounded-lg px-3 py-2 bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder:text-muted text-sm"
+                  className="w-16 border border-border rounded-lg px-2 py-2 bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder:text-muted text-sm"
                 />
                 {ingredients.length > 1 && (
                   <button

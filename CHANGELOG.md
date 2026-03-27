@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.9.0] - 2026-03-27
+
+### Added
+- **Grocery list "Изчисти" button** — clears all items from the current week's list; only visible when the list has items
+- **Add Category inline form** — "+ Категория" pill at the end of the recipe category filters lets you create new categories without leaving the page
+- **Multiple recipes per slot — visual separation** — on the Today page and Dashboard, slots with multiple recipes now show numbered items with dividers instead of plain stacked text
+
+### Fixed
+- **Groceries mobile layout** — input fields (Продукт / Кол. / Мярка) now fit in one row without overflow; "Мярка" was previously cut off
+- **Groceries empty list state** — when a list exists but has no items, a helpful message is shown instead of blank space
+- **Edit/New recipe form — labels** — "Подготовка (мин)" and "Готвене (мин)" shortened to fit the 3-column grid without wrapping
+- **Edit/New recipe form — ingredients overflow** — Кол. and Мярка fields reduced to fit within mobile card without clipping
+- **File upload button** — replaced browser-native "Choose File" with a styled button matching the app design
+- **"Add to meal plan" popup** — converted from a dropdown anchored to a small button (clipped on mobile) to a centered modal with backdrop
+- **Recipe title auto-fit** — title input on edit/new recipe pages shrinks font size to keep long names visible within the field
+- **Back button context** — "Back" button on recipe detail now shows the correct label ("Назад към рецептите" or "Назад към днес") based on where you navigated from
+- **Today page stuck loading** — added `.finally()` to guarantee `setLoading(false)` runs even if the API call fails
+- **Today page cache issue** — navigating back from a recipe to the Today page now forces a fresh data fetch instead of restoring a stale loading state
+- **Bottom nav horizontal cutoff** — added `overflow-x: hidden` to body to prevent horizontal scroll from clipping the fixed nav bar
+
 ## [0.8.0] - 2026-03-27
 
 ### Added
