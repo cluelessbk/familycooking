@@ -54,7 +54,7 @@ export function AddToMealPlanButton({ recipeId }: { recipeId: string }) {
     const mealPlanId = planData.plan?.id;
 
     if (!mealPlanId) {
-      setError("Could not find or create meal plan.");
+      setError("Грешка при намиране на плана.");
       setLoading(false);
       return;
     }
@@ -73,7 +73,7 @@ export function AddToMealPlanButton({ recipeId }: { recipeId: string }) {
       }, 1500);
     } else {
       const data = await res.json();
-      setError(data.error ?? "Something went wrong.");
+      setError(data.error ?? "Нещо се обърка.");
     }
     setLoading(false);
   }
@@ -84,13 +84,13 @@ export function AddToMealPlanButton({ recipeId }: { recipeId: string }) {
         onClick={handleOpen}
         className="bg-primary text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-primary-dark transition-colors"
       >
-        + Meal Plan
+        + План
       </button>
 
       {open && (
         <div className="absolute right-0 top-10 z-10 w-64 bg-card border border-border rounded-xl shadow-lg p-4 space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-foreground">Add to meal plan</h3>
+            <h3 className="text-sm font-semibold text-foreground">Добави в плана</h3>
             <button
               onClick={() => setOpen(false)}
               className="text-muted hover:text-foreground transition-colors text-lg leading-none"
@@ -101,11 +101,11 @@ export function AddToMealPlanButton({ recipeId }: { recipeId: string }) {
           </div>
 
           {success ? (
-            <p className="text-sm text-green-600 font-medium text-center py-2">Added!</p>
+            <p className="text-sm text-green-600 font-medium text-center py-2">Добавено!</p>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-3">
               <div className="space-y-1">
-                <label className="text-xs font-medium text-muted">Date</label>
+                <label className="text-xs font-medium text-muted">Дата</label>
                 <input
                   type="date"
                   value={date}
@@ -115,7 +115,7 @@ export function AddToMealPlanButton({ recipeId }: { recipeId: string }) {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-medium text-muted">Meal</label>
+                <label className="text-xs font-medium text-muted">Хранене</label>
                 <select
                   value={slotId}
                   onChange={(e) => setSlotId(e.target.value)}
@@ -134,7 +134,7 @@ export function AddToMealPlanButton({ recipeId }: { recipeId: string }) {
                 disabled={loading || !slotId}
                 className="w-full bg-primary text-white rounded-lg py-2 text-sm font-semibold hover:bg-primary-dark transition-colors disabled:opacity-60"
               >
-                {loading ? "Adding..." : "Add"}
+                {loading ? "Добавяне..." : "Добави"}
               </button>
             </form>
           )}

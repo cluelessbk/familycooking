@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.8.0] - 2026-03-27
+
+### Added
+- **Planner mobile view** — accordion day list replacing the table grid on mobile; today auto-expands; desktop table unchanged
+
+### Fixed
+- **Recipe detail buttons** — stacked title + buttons vertically on mobile, centered, no more clipping
+- **Full Bulgarian translation** — all remaining English UI text translated (forms, labels, buttons, nav, errors)
+- **Meal slot names in DB** — Breakfast/Lunch/Dinner renamed to Закуска/Обяд/Вечеря
+- **Muted text color** — darkened to `#3D3D3D` for readability on cream background
+- **Foreground color** — changed to pure black `#000000`
+- **Base font size** — increased to 18px globally
+- **Recipe time boxes** — Prep/Cook/Total now always display in one row; Servings moved to separate row above
+
 ## [0.7.0] - 2026-03-27
 
 ### Added

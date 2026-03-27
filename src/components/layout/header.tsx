@@ -31,7 +31,7 @@ export function Header() {
               onClick={() => signOut({ callbackUrl: "/signin" })}
               className="text-sm text-muted hover:text-accent transition-colors"
             >
-              Sign out
+              Изход
             </button>
           </nav>
 
@@ -40,7 +40,7 @@ export function Header() {
             onClick={() => signOut({ callbackUrl: "/signin" })}
             className="sm:hidden text-sm text-muted hover:text-accent transition-colors"
           >
-            Sign out
+            Изход
           </button>
         </div>
       </header>

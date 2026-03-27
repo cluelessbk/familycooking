@@ -113,7 +113,7 @@ export default function EditRecipePage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!title.trim()) {
-      setError("Title is required.");
+      setError("Заглавието е задължително.");
       return;
     }
 
@@ -127,7 +127,7 @@ export default function EditRecipePage() {
       const uploadRes = await fetch("/api/upload", { method: "POST", body: fd });
       const uploadData = await uploadRes.json();
       if (!uploadRes.ok) {
-        setError(`Photo upload failed: ${uploadData.error ?? "unknown error"}`);
+        setError(`Грешка при качване на снимка: ${uploadData.error ?? "неизвестна грешка"}`);
         setSubmitting(false);
         return;
       }
@@ -164,62 +164,62 @@ export default function EditRecipePage() {
 
       if (!res.ok) {
         const data = await res.json();
-        setError(data.error ?? "Something went wrong.");
+        setError(data.error ?? "Нещо се обърка.");
         setSubmitting(false);
         return;
       }
 
       router.push(`/recipes/${id}`);
     } catch {
-      setError("Failed to save recipe.");
+      setError("Грешка при запазване.");
       setSubmitting(false);
     }
   }
 
   if (loading) {
-    return <p className="text-muted text-sm">Loading recipe...</p>;
+    return <p className="text-muted text-sm">Зареждане...</p>;
   }
 
   return (
     <div className="space-y-6 pb-12">
-      <h1 className="text-2xl font-bold text-foreground">Edit Recipe</h1>
+      <h1 className="text-2xl font-bold text-foreground">Редактирай рецепта</h1>
 
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Basic info */}
         <section className="bg-card rounded-xl border border-border p-5 space-y-4">
-          <h2 className="font-semibold text-foreground">Details</h2>
+          <h2 className="font-semibold text-foreground">Детайли</h2>
 
           <div className="space-y-1">
             <label className="text-sm font-medium text-foreground" htmlFor="title">
-              Title <span className="text-accent">*</span>
+              Заглавие <span className="text-accent">*</span>
             </label>
             <input
               id="title"
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. Grandma's Apple Pie"
+              placeholder="напр. Баница на баба"
               className="w-full border border-border rounded-lg px-4 py-3 bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder:text-muted"
             />
           </div>
 
           <div className="space-y-1">
             <label className="text-sm font-medium text-foreground" htmlFor="description">
-              Description
+              Описание
             </label>
             <textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
-              placeholder="A short description of the recipe..."
+              placeholder="Кратко описание на рецептата..."
               className="w-full border border-border rounded-lg px-4 py-3 bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder:text-muted resize-none"
             />
           </div>
 
           <div className="space-y-1">
             <label className="text-sm font-medium text-foreground" htmlFor="category">
-              Category
+              Категория
             </label>
             <select
               id="category"
@@ -227,7 +227,7 @@ export default function EditRecipePage() {
               onChange={(e) => setCategoryId(e.target.value)}
               className="w-full border border-border rounded-lg px-4 py-3 bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
             >
-              <option value="">— Select a category —</option>
+              <option value="">— Избери категория —</option>
               {categories.map((cat) => (
                 <option key={cat.id} value={cat.id}>
                   {cat.name}
@@ -239,7 +239,7 @@ export default function EditRecipePage() {
           <div className="grid grid-cols-3 gap-3">
             <div className="space-y-1">
               <label className="text-sm font-medium text-foreground" htmlFor="servings">
-                Servings
+                Порции
               </label>
               <input
                 id="servings"
@@ -253,7 +253,7 @@ export default function EditRecipePage() {
             </div>
             <div className="space-y-1">
               <label className="text-sm font-medium text-foreground" htmlFor="prepTime">
-                Prep (min)
+                Подготовка (мин)
               </label>
               <input
                 id="prepTime"
@@ -267,7 +267,7 @@ export default function EditRecipePage() {
             </div>
             <div className="space-y-1">
               <label className="text-sm font-medium text-foreground" htmlFor="cookTime">
-                Cook (min)
+                Готвене (мин)
               </label>
               <input
                 id="cookTime"
@@ -284,7 +284,7 @@ export default function EditRecipePage() {
 
         {/* Photo */}
         <section className="bg-card rounded-xl border border-border p-5 space-y-4">
-          <h2 className="font-semibold text-foreground">Photo</h2>
+          <h2 className="font-semibold text-foreground">Снимка</h2>
           {(photoPreview || existingPhotoUrl) && (
             <img
               src={photoPreview ?? existingPhotoUrl!}
@@ -307,14 +307,14 @@ export default function EditRecipePage() {
               onClick={() => setExistingPhotoUrl(null)}
               className="text-sm text-accent hover:underline"
             >
-              Remove photo
+              Премахни снимката
             </button>
           )}
         </section>
 
         {/* Ingredients */}
         <section className="bg-card rounded-xl border border-border p-5 space-y-4">
-          <h2 className="font-semibold text-foreground">Ingredients</h2>
+          <h2 className="font-semibold text-foreground">Съставки</h2>
 
           <div className="space-y-2">
             {ingredients.map((ing, i) => (
@@ -323,21 +323,21 @@ export default function EditRecipePage() {
                   type="text"
                   value={ing.name}
                   onChange={(e) => updateIngredient(i, "name", e.target.value)}
-                  placeholder="Ingredient name"
+                  placeholder="Съставка"
                   className="flex-1 border border-border rounded-lg px-3 py-2 bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder:text-muted text-sm"
                 />
                 <input
                   type="number"
                   value={ing.quantity}
                   onChange={(e) => updateIngredient(i, "quantity", e.target.value)}
-                  placeholder="Qty"
+                  placeholder="Кол."
                   className="w-20 border border-border rounded-lg px-3 py-2 bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder:text-muted text-sm"
                 />
                 <input
                   type="text"
                   value={ing.unit}
                   onChange={(e) => updateIngredient(i, "unit", e.target.value)}
-                  placeholder="Unit"
+                  placeholder="Мярка"
                   className="w-20 border border-border rounded-lg px-3 py-2 bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder:text-muted text-sm"
                 />
                 {ingredients.length > 1 && (
@@ -359,13 +359,13 @@ export default function EditRecipePage() {
             onClick={addIngredient}
             className="text-sm text-primary hover:text-primary-dark font-medium transition-colors"
           >
-            + Add ingredient
+            + Добави съставка
           </button>
         </section>
 
         {/* Steps */}
         <section className="bg-card rounded-xl border border-border p-5 space-y-4">
-          <h2 className="font-semibold text-foreground">Steps</h2>
+          <h2 className="font-semibold text-foreground">Стъпки</h2>
 
           <div className="space-y-3">
             {steps.map((step, i) => (
@@ -377,7 +377,7 @@ export default function EditRecipePage() {
                   value={step.instruction}
                   onChange={(e) => updateStep(i, e.target.value)}
                   rows={2}
-                  placeholder={`Step ${i + 1} instructions...`}
+                  placeholder={`Стъпка ${i + 1}...`}
                   className="flex-1 border border-border rounded-lg px-3 py-2 bg-background focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder:text-muted text-sm resize-none"
                 />
                 {steps.length > 1 && (
@@ -399,7 +399,7 @@ export default function EditRecipePage() {
             onClick={addStep}
             className="text-sm text-primary hover:text-primary-dark font-medium transition-colors"
           >
-            + Add step
+            + Добави стъпка
           </button>
         </section>
 
@@ -413,14 +413,14 @@ export default function EditRecipePage() {
             disabled={submitting}
             className="flex-1 bg-primary text-white rounded-lg py-3 font-semibold hover:bg-primary-dark transition-colors disabled:opacity-60"
           >
-            {submitting ? "Saving..." : "Save Changes"}
+            {submitting ? "Запазване..." : "Запази промените"}
           </button>
           <button
             type="button"
             onClick={() => router.push(`/recipes/${id}`)}
             className="flex-1 border border-border text-foreground rounded-lg py-3 font-semibold hover:bg-secondary transition-colors"
           >
-            Cancel
+            Отказ
           </button>
         </div>
       </form>

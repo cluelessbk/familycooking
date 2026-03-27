@@ -9,7 +9,7 @@ export function BackButton() {
       onClick={() => router.back()}
       className="text-sm text-muted hover:text-foreground transition-colors"
     >
-      ← Back to Recipes
+      ← Назад към рецептите
     </button>
   );
 }

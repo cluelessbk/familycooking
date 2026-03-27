@@ -34,7 +34,7 @@ export default async function RecipeDetailPage({
       <BackButton />
 
       {/* Title & actions */}
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col gap-3">
         <div className="space-y-1">
           {recipe.category && (
             <span className="inline-block bg-secondary text-muted text-xs font-medium px-2 py-0.5 rounded-full">
@@ -43,13 +43,13 @@ export default async function RecipeDetailPage({
           )}
           <h1 className="text-2xl font-bold text-foreground">{recipe.title}</h1>
         </div>
-        <div className="flex gap-2 flex-shrink-0">
+        <div className="flex gap-2 justify-center">
           <AddToMealPlanButton recipeId={id} />
           <Link
             href={`/recipes/${id}/edit`}
             className="bg-secondary text-foreground rounded-lg px-4 py-2 text-sm font-medium hover:bg-border transition-colors"
           >
-            Edit
+            Редактирай
           </Link>
           <DeleteRecipeButton id={id} />
         </div>
@@ -69,29 +69,33 @@ export default async function RecipeDetailPage({
       )}
 
       {/* Meta info */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="space-y-3">
         {recipe.servings && (
           <div className="bg-card rounded-xl border border-border p-4 text-center">
-            <p className="text-xs text-muted mb-1">Servings</p>
+            <p className="text-xs text-muted mb-1">Порции</p>
             <p className="font-semibold text-foreground">{recipe.servings}</p>
           </div>
         )}
-        {recipe.prepTime && (
-          <div className="bg-card rounded-xl border border-border p-4 text-center">
-            <p className="text-xs text-muted mb-1">Prep time</p>
-            <p className="font-semibold text-foreground">{recipe.prepTime} min</p>
-          </div>
-        )}
-        {recipe.cookTime && (
-          <div className="bg-card rounded-xl border border-border p-4 text-center">
-            <p className="text-xs text-muted mb-1">Cook time</p>
-            <p className="font-semibold text-foreground">{recipe.cookTime} min</p>
-          </div>
-        )}
-        {totalTime > 0 && recipe.prepTime && recipe.cookTime && (
-          <div className="bg-card rounded-xl border border-border p-4 text-center col-span-3">
-            <p className="text-xs text-muted mb-1">Total time</p>
-            <p className="font-semibold text-foreground">{totalTime} min</p>
+        {(recipe.prepTime || recipe.cookTime) && (
+          <div className="grid grid-cols-3 gap-3">
+            {recipe.prepTime && (
+              <div className="bg-card rounded-xl border border-border p-4 text-center">
+                <p className="text-xs text-muted mb-1">Подготовка</p>
+                <p className="font-semibold text-foreground">{recipe.prepTime} мин</p>
+              </div>
+            )}
+            {recipe.cookTime && (
+              <div className="bg-card rounded-xl border border-border p-4 text-center">
+                <p className="text-xs text-muted mb-1">Готвене</p>
+                <p className="font-semibold text-foreground">{recipe.cookTime} мин</p>
+              </div>
+            )}
+            {totalTime > 0 && recipe.prepTime && recipe.cookTime && (
+              <div className="bg-card rounded-xl border border-border p-4 text-center">
+                <p className="text-xs text-muted mb-1">Общо</p>
+                <p className="font-semibold text-foreground">{totalTime} мин</p>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -99,7 +103,7 @@ export default async function RecipeDetailPage({
       {/* Description */}
       {recipe.description && (
         <div className="bg-card rounded-xl border border-border p-5">
-          <h2 className="font-semibold text-foreground mb-2">About</h2>
+          <h2 className="font-semibold text-foreground mb-2">За рецептата</h2>
           <p className="text-muted text-sm leading-relaxed">{recipe.description}</p>
         </div>
       )}
@@ -107,7 +111,7 @@ export default async function RecipeDetailPage({
       {/* Ingredients */}
       {recipe.ingredients.length > 0 && (
         <div className="bg-card rounded-xl border border-border p-5">
-          <h2 className="font-semibold text-foreground mb-3">Ingredients</h2>
+          <h2 className="font-semibold text-foreground mb-3">Съставки</h2>
           <ul>
             {recipe.ingredients.map((ing, index) => (
               <li
@@ -135,7 +139,7 @@ export default async function RecipeDetailPage({
       {/* Steps */}
       {recipe.steps.length > 0 && (
         <div>
-          <h2 className="font-semibold text-foreground px-1 mb-3">Steps</h2>
+          <h2 className="font-semibold text-foreground px-1 mb-3">Стъпки</h2>
           <FlowchartSteps steps={recipe.steps} />
         </div>
       )}

@@ -50,6 +50,7 @@ export default function PlannerPage() {
   const [picker, setPicker] = useState<{ date: string; slotId: string } | null>(null);
   const [search, setSearch] = useState("");
   const [removingId, setRemovingId] = useState<string | null>(null);
+  const [expandedDay, setExpandedDay] = useState<string | null>(() => toISODate(new Date()));
 
   // Fetch week data whenever the week changes
   const loadWeek = useCallback(async (monday: Date) => {
@@ -144,54 +145,52 @@ export default function PlannerPage() {
         </button>
       </div>
 
-      {/* Planner grid */}
+      {/* Planner — mobile accordion */}
       {loading ? (
         <p className="text-center text-muted py-12">Зареждане…</p>
       ) : data ? (
-        <div className="overflow-x-auto -mx-4 px-4">
-          <table className="w-full min-w-[480px] border-collapse">
-            <thead>
-              <tr>
-                <th className="text-left py-2 pr-3 text-sm font-medium text-muted w-28">Ден</th>
-                {data.slots.map((slot) => (
-                  <th key={slot.id} className="text-center py-2 px-2 text-sm font-medium text-muted">
-                    {slot.name}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {days.map((day) => {
-                const dateStr = toISODate(day);
-                const isToday = dateStr === toISODate(new Date());
-                return (
-                  <tr key={dateStr} className={isToday ? "bg-primary/5" : ""}>
-                    <td className="py-2 pr-3 text-sm font-medium text-foreground whitespace-nowrap">
-                      {formatDay(day)}
-                      {isToday && (
-                        <span className="ml-1 text-xs text-primary font-normal">днес</span>
+        <>
+          {/* ── Mobile view ── */}
+          <div className="sm:hidden space-y-2">
+            {days.map((day) => {
+              const dateStr = toISODate(day);
+              const isToday = dateStr === toISODate(new Date());
+              const dayMeals = data.meals.filter((m) => m.date.slice(0, 10) === dateStr);
+              const isOpen = expandedDay === dateStr;
+              return (
+                <div key={dateStr} className={`bg-card rounded-xl border ${isToday ? "border-primary" : "border-border"}`}>
+                  <button
+                    onClick={() => setExpandedDay(isOpen ? null : dateStr)}
+                    className="w-full flex items-center justify-between px-4 py-3"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-foreground">{formatDay(day)}</span>
+                      {isToday && <span className="text-xs text-primary font-normal">днес</span>}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {dayMeals.length > 0 && (
+                        <span className="text-xs text-muted">{dayMeals.length} {dayMeals.length === 1 ? "рецепта" : "рецепти"}</span>
                       )}
-                    </td>
-                    {data.slots.map((slot) => {
-                      const slotMeals = data.meals.filter(
-                        (m) => m.mealSlotId === slot.id && m.date.slice(0, 10) === dateStr
-                      );
-                      return (
-                        <td key={slot.id} className="py-1.5 px-2 align-top">
-                          <div className="flex flex-col gap-1">
+                      <span className="text-muted text-sm">{isOpen ? "▲" : "▼"}</span>
+                    </div>
+                  </button>
+                  {isOpen && (
+                    <div className="border-t border-border divide-y divide-border">
+                      {data.slots.map((slot) => {
+                        const slotMeals = dayMeals.filter((m) => m.mealSlotId === slot.id);
+                        return (
+                          <div key={slot.id} className="px-4 py-3 space-y-2">
+                            <p className="text-xs font-medium text-muted">{slot.name}</p>
                             {slotMeals.map((meal) => (
-                              <div key={meal.id} className="flex items-center gap-1 bg-card border border-border rounded-lg px-2 py-1.5">
-                                <a
-                                  href={`/recipes/${meal.recipe.id}`}
-                                  className="text-xs text-foreground hover:text-primary flex-1 leading-tight line-clamp-2"
-                                >
+                              <div key={meal.id} className="flex items-center gap-2 bg-secondary rounded-lg px-3 py-2">
+                                <a href={`/recipes/${meal.recipe.id}`} className="text-sm text-foreground hover:text-primary flex-1">
                                   {meal.recipe.title}
                                 </a>
                                 <button
                                   onClick={() => removeMeal(meal.id)}
                                   disabled={removingId === meal.id}
-                                  className="shrink-0 text-muted hover:text-red-500 transition-colors text-sm leading-none"
-                                  aria-label="Remove"
+                                  className="text-muted hover:text-red-500 transition-colors"
+                                  aria-label="Премахни"
                                 >
                                   ×
                                 </button>
@@ -199,21 +198,82 @@ export default function PlannerPage() {
                             ))}
                             <button
                               onClick={() => setPicker({ date: dateStr, slotId: slot.id })}
-                              className="w-full h-7 flex items-center justify-center rounded-lg border border-dashed border-border text-muted hover:border-primary hover:text-primary transition-colors text-lg leading-none"
-                              aria-label={`Add recipe for ${slot.name} on ${dateStr}`}
+                              className="w-full py-2 rounded-lg border border-dashed border-border text-muted hover:border-primary hover:text-primary transition-colors text-sm"
                             >
-                              +
+                              + Добави
                             </button>
                           </div>
-                        </td>
-                      );
-                    })}
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* ── Desktop view (table) ── */}
+          <div className="hidden sm:block overflow-x-auto -mx-4 px-4">
+            <table className="w-full min-w-[480px] border-collapse">
+              <thead>
+                <tr>
+                  <th className="text-left py-2 pr-3 text-sm font-medium text-muted w-28">Ден</th>
+                  {data.slots.map((slot) => (
+                    <th key={slot.id} className="text-center py-2 px-2 text-sm font-medium text-muted">
+                      {slot.name}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {days.map((day) => {
+                  const dateStr = toISODate(day);
+                  const isToday = dateStr === toISODate(new Date());
+                  return (
+                    <tr key={dateStr} className={isToday ? "bg-primary/5" : ""}>
+                      <td className="py-2 pr-3 text-sm font-medium text-foreground whitespace-nowrap">
+                        {formatDay(day)}
+                        {isToday && <span className="ml-1 text-xs text-primary font-normal">днес</span>}
+                      </td>
+                      {data.slots.map((slot) => {
+                        const slotMeals = data.meals.filter(
+                          (m) => m.mealSlotId === slot.id && m.date.slice(0, 10) === dateStr
+                        );
+                        return (
+                          <td key={slot.id} className="py-1.5 px-2 align-top">
+                            <div className="flex flex-col gap-1">
+                              {slotMeals.map((meal) => (
+                                <div key={meal.id} className="flex items-center gap-1 bg-card border border-border rounded-lg px-2 py-1.5">
+                                  <a href={`/recipes/${meal.recipe.id}`} className="text-xs text-foreground hover:text-primary flex-1 leading-tight line-clamp-2">
+                                    {meal.recipe.title}
+                                  </a>
+                                  <button
+                                    onClick={() => removeMeal(meal.id)}
+                                    disabled={removingId === meal.id}
+                                    className="shrink-0 text-muted hover:text-red-500 transition-colors text-sm leading-none"
+                                    aria-label="Remove"
+                                  >
+                                    ×
+                                  </button>
+                                </div>
+                              ))}
+                              <button
+                                onClick={() => setPicker({ date: dateStr, slotId: slot.id })}
+                                className="w-full h-7 flex items-center justify-center rounded-lg border border-dashed border-border text-muted hover:border-primary hover:text-primary transition-colors text-lg leading-none"
+                              >
+                                +
+                              </button>
+                            </div>
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </>
       ) : null}
 
       {/* Recipe picker modal */}

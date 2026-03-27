@@ -17,19 +17,19 @@ export function DeleteRecipeButton({ id }: { id: string }) {
   if (confirming) {
     return (
       <div className="flex gap-2 items-center">
-        <span className="text-sm text-muted">Sure?</span>
+        <span className="text-sm text-muted">Сигурен?</span>
         <button
           onClick={handleDelete}
           disabled={deleting}
           className="bg-accent text-white rounded-lg px-3 py-2 text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-60"
         >
-          {deleting ? "Deleting..." : "Yes, delete"}
+          {deleting ? "Изтриване..." : "Да, изтрий"}
         </button>
         <button
           onClick={() => setConfirming(false)}
           className="text-sm text-muted hover:text-foreground transition-colors px-2 py-2"
         >
-          Cancel
+          Отказ
         </button>
       </div>
     );
@@ -40,7 +40,7 @@ export function DeleteRecipeButton({ id }: { id: string }) {
       onClick={() => setConfirming(true)}
       className="bg-accent text-white rounded-lg px-4 py-2 text-sm font-medium hover:opacity-90 transition-opacity"
     >
-      Delete
+      Изтрий
     </button>
   );
 }
