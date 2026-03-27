@@ -1,6 +1,13 @@
 import { prisma } from "@/lib/db";
+import { auth } from "@/lib/auth";
 
 export async function POST(request: Request) {
+  const session = await auth();
+  if (!session?.user?.householdId) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const householdId = session.user.householdId;
+
   const body = await request.json();
   const { week } = body;
 
@@ -11,10 +18,12 @@ export async function POST(request: Request) {
   const weekStart = new Date(week);
   weekStart.setUTCHours(0, 0, 0, 0);
 
-  // Get or create the meal plan for this week
-  let plan = await prisma.mealPlan.findUnique({ where: { weekStart } });
+  // Get or create the meal plan for this week + household
+  let plan = await prisma.mealPlan.findUnique({
+    where: { weekStart_householdId: { weekStart, householdId } },
+  });
   if (!plan) {
-    plan = await prisma.mealPlan.create({ data: { weekStart } });
+    plan = await prisma.mealPlan.create({ data: { weekStart, householdId } });
   }
 
   // Get or create the grocery list tied to this plan

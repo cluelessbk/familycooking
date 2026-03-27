@@ -1,11 +1,21 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
+import { auth } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
+  const session = await auth();
+  if (!session?.user?.householdId) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const householdId = session.user.householdId;
+
   const categoryId = request.nextUrl.searchParams.get("categoryId");
 
   const recipes = await prisma.recipe.findMany({
-    where: categoryId ? { categoryId } : undefined,
+    where: {
+      householdId,
+      ...(categoryId ? { categoryId } : {}),
+    },
     include: { category: true },
     orderBy: { createdAt: "desc" },
   });
@@ -14,6 +24,12 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: Request) {
+  const session = await auth();
+  if (!session?.user?.householdId) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const householdId = session.user.householdId;
+
   const body = await request.json();
   const { title, description, photoUrl, categoryId, servings, prepTime, cookTime, ingredients, steps } = body;
 
@@ -24,6 +40,7 @@ export async function POST(request: Request) {
   const recipe = await prisma.recipe.create({
     data: {
       title,
+      householdId,
       description: description ?? null,
       photoUrl: photoUrl ?? null,
       categoryId: categoryId ?? null,

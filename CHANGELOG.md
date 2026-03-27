@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.0.0] - 2026-03-27
+
+### Added
+- **OTP sign-in** — replaced magic links with 6-digit codes sent via email; 10-minute expiry, 60-second resend cooldown; Bulgarian UI
+- **Open registration** — anyone can sign up; AllowedEmail restriction removed
+- **Household model** — each user gets an isolated data space (Household, HouseholdMember, InviteLink tables)
+- **Data isolation** — all API routes now require auth and filter recipes, meal plans, and groceries by household
+- **Invite system** — owners generate a 7-day shareable link; invitees open `/join/[token]`, sign in, and are added as members
+- **Settings page** (`/settings`) — shows household name, members list, and invite link generator with copy button
+- **Auth enforced everywhere** — layout auth bypass removed, upload route re-enabled, all 13 API routes protected
+
+### Removed
+- Magic link email auth (`resend` provider)
+- `AllowedEmail` table and invite-only restriction
+- Dev-mode auth bypass in layout and upload route
+
 ## [0.9.1] - 2026-03-27
 
 ### Added

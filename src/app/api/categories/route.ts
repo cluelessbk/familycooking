@@ -1,6 +1,12 @@
 import { prisma } from "@/lib/db";
+import { auth } from "@/lib/auth";
 
 export async function GET() {
+  const session = await auth();
+  if (!session?.user?.householdId) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const categories = await prisma.category.findMany({
     orderBy: [{ isPreset: "desc" }, { name: "asc" }],
   });
@@ -9,6 +15,11 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const session = await auth();
+  if (!session?.user?.householdId) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const body = await request.json();
   const { name } = body;
 

@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 function getMondayOf(date: Date): Date {
   const d = new Date(date);
@@ -11,6 +13,10 @@ function getMondayOf(date: Date): Date {
 }
 
 export default async function DashboardPage() {
+  const session = await auth();
+  if (!session?.user?.householdId) redirect("/signin");
+  const householdId = session.user.householdId;
+
   const now = new Date();
   const todayStr = now.toISOString().slice(0, 10);
   const monday = getMondayOf(now);
@@ -23,7 +29,9 @@ export default async function DashboardPage() {
   });
 
   // Fetch today's meals
-  const plan = await prisma.mealPlan.findUnique({ where: { weekStart: monday } });
+  const plan = await prisma.mealPlan.findUnique({
+    where: { weekStart_householdId: { weekStart: monday, householdId } },
+  });
 
   const [slots, todayMeals] = await Promise.all([
     prisma.mealSlot.findMany({ orderBy: { sortOrder: "asc" } }),

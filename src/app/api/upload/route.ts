@@ -1,12 +1,11 @@
 import { put } from "@vercel/blob";
-// import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 
 export async function POST(request: Request) {
-  // TODO: re-enable auth check before deploying to production
-  // const session = await auth();
-  // if (!session) {
-  //   return Response.json({ error: "Unauthorized" }, { status: 401 });
-  // }
+  const session = await auth();
+  if (!session) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   const formData = await request.formData();
   const file = formData.get("file") as File | null;

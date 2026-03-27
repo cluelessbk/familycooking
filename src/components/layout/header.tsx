@@ -27,6 +27,9 @@ export function Header() {
             <Link href="/groceries" className="text-sm text-muted hover:text-foreground transition-colors">
               Пазаруване
             </Link>
+            <Link href="/settings" className="text-sm text-muted hover:text-foreground transition-colors">
+              Настройки
+            </Link>
             <button
               onClick={() => signOut({ callbackUrl: "/signin" })}
               className="text-sm text-muted hover:text-accent transition-colors"
