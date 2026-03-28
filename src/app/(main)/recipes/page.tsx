@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { ShareButton } from "@/components/recipes/ShareButton";
 
 interface Category {
   id: string;
@@ -202,7 +203,7 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
   return (
     <Link
       href={`/recipes/${recipe.id}?from=recipes`}
-      className="block p-5 bg-card rounded-xl border border-border hover:border-primary hover:shadow-md transition-all"
+      className="relative block p-5 bg-card rounded-xl border border-border hover:border-primary hover:shadow-md transition-all"
     >
       {/* Photo */}
       {recipe.photoUrl ? (
@@ -232,6 +233,7 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
           {recipe.servings && <span>👥 {recipe.servings} порции</span>}
         </div>
       </div>
+      <ShareButton recipeId={recipe.id} variant="card" />
     </Link>
   );
 }

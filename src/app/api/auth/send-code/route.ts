@@ -1,9 +1,22 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 
-function getResend() {
-  return new Resend(process.env.RESEND_API_KEY);
+let _transporter: ReturnType<typeof nodemailer.createTransport> | null = null;
+
+function getTransporter() {
+  if (!_transporter) {
+    _transporter = nodemailer.createTransport({
+      host: "smtp.mail.yahoo.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    });
+  }
+  return _transporter;
 }
 
 export async function POST(req: NextRequest) {
@@ -45,13 +58,16 @@ export async function POST(req: NextRequest) {
   });
 
   // Send email
-  await getResend().emails.send({
-    from: "FamilyCooking <noreply@resend.dev>",
-    to: email,
-    subject: "Твоят код за вход в FamilyCooking",
-    text: `Твоят код за вход в FamilyCooking е: ${code}\n\nКодът е валиден 10 минути.`,
-  });
+  try {
+    await getTransporter().sendMail({
+      from: `"FamilyCooking" <${process.env.SMTP_USER}>`,
+      to: email,
+      subject: "Твоят код за вход в FamilyCooking",
+      text: `Твоят код за вход в FamilyCooking е: ${code}\n\nКодът е валиден 10 минути.`,
+    });
+  } catch {
+    return Response.json({ error: "Failed to send email" }, { status: 500 });
+  }
 
-  // Always return 200 — don't reveal whether email exists
   return Response.json({ ok: true });
 }

@@ -1,12 +1,26 @@
 # Changelog
 
+## [1.1.0] - 2026-03-28
+
+### Added
+- **Recipe sharing** — "Сподели" button on recipe cards and detail page generates a permanent share link; recipients open the link, sign in, see the full recipe, and add it to their household with one click (choosing their own category)
+- **Share toast notification** — clear feedback explaining the link was copied and can be pasted into a chat or message
+
+### Changed
+- **Email delivery switched from Resend to Nodemailer + Yahoo SMTP** — Resend required a custom domain; Nodemailer sends via Yahoo SMTP with no domain needed
+- **Invite text updated** — settings page no longer implies WhatsApp/Viber are the only sharing options
+
+### Fixed
+- **Email transporter cached** — singleton instead of recreating on every login request
+- **Email send error handling** — returns 500 if delivery fails instead of crashing
+
 ## [1.0.1] - 2026-03-28
 
 ### Infrastructure
 - **Deployed to Vercel** — app is live at https://familycooking.vercel.app
 - **GitHub auto-deploy** — every push to master triggers an automatic Vercel deployment
 - **Production database seeded** — categories (9) and meal slots (Закуска, Обяд, Вечеря) seeded into Turso
-- **All env vars configured** — AUTH_SECRET, TURSO credentials, RESEND_API_KEY, BLOB token, NEXTAUTH_URL all set as encrypted Vercel env vars
+- **All env vars configured** — AUTH_SECRET, TURSO credentials, BLOB token, NEXTAUTH_URL, SMTP credentials all set as encrypted Vercel env vars
 - **Production seed script** — `scripts/seed-production.ts` for seeding any future fresh Turso database
 
 ## [1.0.0] - 2026-03-27

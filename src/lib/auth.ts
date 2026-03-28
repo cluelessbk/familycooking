@@ -2,11 +2,6 @@ import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/lib/db";
-import { Resend } from "resend";
-
-function getResend() {
-  return new Resend(process.env.RESEND_API_KEY);
-}
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -135,5 +130,3 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     signIn: "/signin",
   },
 });
-
-export { getResend };

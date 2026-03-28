@@ -94,7 +94,7 @@ export default function SettingsPage() {
           <h2 className="text-base font-semibold text-foreground">Покани</h2>
           <div className="bg-card border border-border rounded-xl p-4 space-y-3">
             <p className="text-sm text-muted">
-              Генерирай линк за покана и го изпрати по WhatsApp или Viber.
+              Генерирай линк за покана и го сподели — например по WhatsApp, Viber или друг начин.
               Линкът е валиден 7 дни.
             </p>
             <button

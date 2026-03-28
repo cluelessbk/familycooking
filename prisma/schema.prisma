@@ -82,6 +82,17 @@ model Recipe {
   ingredients RecipeIngredient[]
   steps       RecipeStep[]
   plannedMeals PlannedMeal[]
+  shareTokens ShareToken[]
+}
+
+model ShareToken {
+  id        String   @id @default(cuid())
+  token     String   @unique @default(uuid())
+  recipeId  String
+  createdBy String
+  createdAt DateTime @default(now())
+
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 }
 
 model RecipeIngredient {
