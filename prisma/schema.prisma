@@ -83,6 +83,7 @@ model Recipe {
   steps       RecipeStep[]
   plannedMeals PlannedMeal[]
   shareTokens ShareToken[]
+  publisherAuditLogs PublisherAuditLog[]
 }
 
 model ShareToken {
@@ -173,6 +174,49 @@ model Household {
   recipes     Recipe[]
   mealPlans   MealPlan[]
   inviteLinks InviteLink[]
+  publisherApiKeys PublisherApiKey[]
+  publisherAuditLogs PublisherAuditLog[]
+}
+
+model PublisherApiKey {
+  id          String    @id @default(cuid())
+  householdId String
+  name        String
+  keyPrefix   String
+  keyHash     String    @unique
+  createdBy   String
+  createdAt   DateTime  @default(now())
+  lastUsedAt  DateTime?
+  revokedAt   DateTime?
+
+  household   Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  auditLogs   PublisherAuditLog[]
+  rateLimit   PublisherRateLimit?
+
+  @@index([householdId])
+}
+
+model PublisherRateLimit {
+  apiKeyId    String          @id
+  windowStart DateTime        @default(now())
+  requestCount Int            @default(0)
+  apiKey      PublisherApiKey @relation(fields: [apiKeyId], references: [id], onDelete: Cascade)
+}
+
+model PublisherAuditLog {
+  id          String          @id @default(cuid())
+  householdId String
+  apiKeyId    String
+  action      String
+  recipeId    String?
+  createdAt   DateTime        @default(now())
+
+  household   Household       @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  apiKey      PublisherApiKey @relation(fields: [apiKeyId], references: [id], onDelete: Cascade)
+  recipe      Recipe?         @relation(fields: [recipeId], references: [id], onDelete: SetNull)
+
+  @@index([householdId, createdAt])
+  @@index([recipeId])
 }
 
 model HouseholdMember {

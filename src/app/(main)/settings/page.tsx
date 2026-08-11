@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 type Member = { userId: string; role: string; user?: { email: string; name?: string | null } };
+type PublisherKey = { id: string; name: string; keyPrefix: string; createdAt: string; lastUsedAt?: string | null; revokedAt?: string | null };
 
 export default function SettingsPage() {
   const [householdName, setHouseholdName] = useState<string>("");
@@ -12,6 +13,10 @@ export default function SettingsPage() {
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
+  const [publisherKeys, setPublisherKeys] = useState<PublisherKey[]>([]);
+  const [keyName, setKeyName] = useState("Jarvis recipe publisher");
+  const [newKey, setNewKey] = useState("");
+  const [keyLoading, setKeyLoading] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -22,6 +27,10 @@ export default function SettingsPage() {
           setHouseholdName(data.household.name);
           setMembers(data.members);
           setUserRole(data.myRole);
+          if (data.myRole === "OWNER") {
+            const keysRes = await fetch("/api/household/publisher-keys");
+            if (keysRes.ok) setPublisherKeys(await keysRes.json());
+          }
         }
       } finally {
         setPageLoading(false);
@@ -47,6 +56,30 @@ export default function SettingsPage() {
     await navigator.clipboard.writeText(inviteUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  }
+
+  async function handleCreatePublisherKey() {
+    setKeyLoading(true);
+    try {
+      const res = await fetch("/api/household/publisher-keys", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: keyName }),
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      setNewKey(data.key);
+      setPublisherKeys((keys) => [data, ...keys]);
+    } finally {
+      setKeyLoading(false);
+    }
+  }
+
+  async function handleRevokePublisherKey(id: string) {
+    const res = await fetch(`/api/household/publisher-keys/${id}`, { method: "DELETE" });
+    if (res.ok) {
+      setPublisherKeys((keys) => keys.map((key) => key.id === id ? { ...key, revokedAt: new Date().toISOString() } : key));
+    }
   }
 
   if (pageLoading) {
@@ -116,6 +149,59 @@ export default function SettingsPage() {
                     {copied ? "Копирано!" : "Копирай"}
                   </button>
                 </div>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {userRole === "OWNER" && (
+        <section className="space-y-2">
+          <h2 className="text-base font-semibold text-foreground">API за публикуване на рецепти</h2>
+          <div className="bg-card border border-border rounded-xl p-4 space-y-4">
+            <p className="text-sm text-muted">
+              Създай отделен ключ за доверен помощник. Ключът има достъп само до рецептите в това домакинство.
+            </p>
+            <div className="flex gap-2">
+              <input
+                value={keyName}
+                onChange={(event) => setKeyName(event.target.value)}
+                maxLength={80}
+                className="min-w-0 flex-1 px-3 py-2 rounded-lg border border-border bg-background text-sm text-foreground"
+                placeholder="Име на ключа"
+              />
+              <button
+                onClick={handleCreatePublisherKey}
+                disabled={keyLoading || !keyName.trim()}
+                className="px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium disabled:opacity-50"
+              >
+                {keyLoading ? "Създаване…" : "Създай ключ"}
+              </button>
+            </div>
+
+            {newKey && (
+              <div className="p-3 rounded-lg border border-primary bg-background space-y-2">
+                <p className="text-sm font-medium text-foreground">Копирай ключа сега — няма да бъде показан отново.</p>
+                <div className="flex items-center gap-2">
+                  <code className="text-xs text-muted break-all flex-1">{newKey}</code>
+                  <button onClick={() => navigator.clipboard.writeText(newKey)} className="text-xs text-primary font-medium">Копирай</button>
+                </div>
+              </div>
+            )}
+
+            {publisherKeys.length > 0 && (
+              <div className="divide-y divide-border border-t border-border">
+                {publisherKeys.map((key) => (
+                  <div key={key.id} className="flex items-center justify-between gap-3 py-3">
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-foreground truncate">{key.name}</p>
+                      <p className="text-xs text-muted font-mono">{key.keyPrefix}… · {key.revokedAt ? "Отменен" : "Активен"}</p>
+                    </div>
+                    {!key.revokedAt && (
+                      <button onClick={() => handleRevokePublisherKey(key.id)} className="text-xs text-red-600 font-medium shrink-0">Отмени</button>
+                    )}
+                  </div>
+                ))}
               </div>
             )}
           </div>
