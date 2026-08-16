@@ -45,7 +45,7 @@ function SignInForm() {
       }
 
       setStep("code");
-      setCooldown(60);
+      setCooldown(5 * 60);
     } catch {
       setError("Нещо се обърка. Опитай отново.");
     } finally {
@@ -74,7 +74,7 @@ function SignInForm() {
         return;
       }
 
-      setCooldown(60);
+      setCooldown(5 * 60);
     } catch {
       setError("Нещо се обърка. Опитай отново.");
     } finally {
@@ -153,7 +153,7 @@ function SignInForm() {
         ) : (
           <>
             <p className="text-muted text-sm text-center mb-6">
-              Изпратихме 6-цифрен код на <strong>{email}</strong>
+              Изпратихме 6-цифрен код на <strong>{email}</strong>. Кодът е валиден 5 минути.
             </p>
             <form onSubmit={handleVerifyCode} className="space-y-4">
               <input
@@ -195,7 +195,9 @@ function SignInForm() {
                 disabled={cooldown > 0 || loading}
                 className="hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {cooldown > 0 ? `Изпрати отново (${cooldown}s)` : "Изпрати отново"}
+                {cooldown > 0
+                  ? `Изпрати отново (${Math.floor(cooldown / 60)}:${String(cooldown % 60).padStart(2, "0")})`
+                  : "Изпрати отново"}
               </button>
             </div>
           </>

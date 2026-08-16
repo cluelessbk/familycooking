@@ -28,11 +28,12 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: "Invalid email" }, { status: 400 });
   }
 
-  // Rate limit: block if a token was created < 60 seconds ago
+  // A code remains valid for five minutes. Do not issue another valid code
+  // during that window, which keeps the UI countdown and server in sync.
   const recent = await prisma.verificationToken.findFirst({
     where: {
       identifier: email,
-      expires: { gt: new Date(Date.now() - 60 * 1000) },
+      expires: { gt: new Date() },
     },
     orderBy: { expires: "desc" },
   });
@@ -49,12 +50,12 @@ export async function POST(req: NextRequest) {
   // Generate 6-digit code
   const code = Math.floor(100000 + Math.random() * 900000).toString();
 
-  // Store token (expires in 10 minutes)
+  // Store token (expires in 5 minutes)
   await prisma.verificationToken.create({
     data: {
       identifier: email,
       token: code,
-      expires: new Date(Date.now() + 10 * 60 * 1000),
+      expires: new Date(Date.now() + 5 * 60 * 1000),
     },
   });
 
@@ -64,7 +65,7 @@ export async function POST(req: NextRequest) {
       from: `"FamilyCooking" <${process.env.SMTP_USER}>`,
       to: email,
       subject: "Твоят код за вход в FamilyCooking",
-      text: `Твоят код за вход в FamilyCooking е: ${code}\n\nКодът е валиден 10 минути.`,
+      text: `Твоят код за вход в FamilyCooking е: ${code}\n\nКодът е валиден 5 минути.`,
     });
   } catch {
     return Response.json({ error: "Failed to send email" }, { status: 500 });

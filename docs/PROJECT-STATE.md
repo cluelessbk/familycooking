@@ -4,16 +4,16 @@ Updated: 2026-08-16
 
 ## Current work
 
-Version 1.3.0 household collaboration is implemented locally. Direct registrations create an empty household owned by the registrant. Invitation registrations join the inviting household as members. All members can create invitations, while owners have a dedicated Administration panel for member roles, removal, and invitation revocation. Multiple owners are supported with a final-owner safeguard.
+Version 1.3.1 fixes the first production feedback from household collaboration. Any verified household member can edit the shared household name. Invite creation now displays and automatically copies the generated URL, with visible success and failure feedback. Email login codes and their resend countdown now use a consistent five-minute window.
 
 ## Verification
 
-- Targeted ESLint passes for every changed and added file.
-- Next.js 16.2.1 production build and TypeScript validation pass, including the new `/admin` page and member-management API.
+- Targeted ESLint passes for every changed file.
+- Next.js 16.2.1 production build and TypeScript validation pass.
 - `git diff --check` passes.
-- Full repository lint remains blocked by four pre-existing errors in groceries, planner, and recipe list pages; this change introduces no new lint errors.
-- No database migration is required because the existing household, membership, and invitation tables support this feature.
+- Production logs confirmed both reported invite POST requests returned HTTP 200; the defect was missing client-side feedback rather than invite creation failure.
+- No database migration is required.
 
 ## Next action
 
-Review the local v1.3.0 commit with Rumen. Do not push or deploy without explicit approval.
+Push and deploy v1.3.1 after Rumen's approval.

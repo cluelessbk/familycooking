@@ -7,11 +7,15 @@ type PublisherKey = { id: string; name: string; keyPrefix: string; createdAt: st
 
 export default function SettingsPage() {
   const [householdName, setHouseholdName] = useState<string>("");
+  const [savedHouseholdName, setSavedHouseholdName] = useState<string>("");
+  const [nameSaving, setNameSaving] = useState(false);
+  const [nameMessage, setNameMessage] = useState("");
   const [members, setMembers] = useState<Member[]>([]);
   const [userRole, setUserRole] = useState<string>("");
   const [inviteUrl, setInviteUrl] = useState<string>("");
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [inviteMessage, setInviteMessage] = useState("");
   const [pageLoading, setPageLoading] = useState(true);
   const [publisherKeys, setPublisherKeys] = useState<PublisherKey[]>([]);
   const [keyName, setKeyName] = useState("Jarvis recipe publisher");
@@ -25,6 +29,7 @@ export default function SettingsPage() {
         if (res.ok) {
           const data = await res.json();
           setHouseholdName(data.household.name);
+          setSavedHouseholdName(data.household.name);
           setMembers(data.members);
           setUserRole(data.myRole);
           if (data.myRole === "OWNER") {
@@ -41,14 +46,53 @@ export default function SettingsPage() {
 
   async function handleGenerateInvite() {
     setLoading(true);
+    setInviteMessage("");
     try {
       const res = await fetch("/api/household/invite", { method: "POST" });
-      if (res.ok) {
-        const data = await res.json();
-        setInviteUrl(data.url);
+      const data = await res.json();
+      if (!res.ok || typeof data.url !== "string") {
+        setInviteMessage("Линкът не можа да бъде генериран. Опитай отново.");
+        return;
       }
+      setInviteUrl(data.url);
+      try {
+        await navigator.clipboard.writeText(data.url);
+        setCopied(true);
+        setInviteMessage("Линкът е генериран и копиран.");
+        setTimeout(() => setCopied(false), 2000);
+      } catch {
+        setInviteMessage("Линкът е генериран. Натисни „Копирай“.");
+      }
+    } catch {
+      setInviteMessage("Линкът не можа да бъде генериран. Провери връзката и опитай отново.");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleSaveHouseholdName() {
+    const name = householdName.trim();
+    if (!name || name === savedHouseholdName) return;
+    setNameSaving(true);
+    setNameMessage("");
+    try {
+      const res = await fetch("/api/household/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
+      });
+      if (!res.ok) {
+        setNameMessage("Името не можа да бъде запазено.");
+        return;
+      }
+      const data = await res.json();
+      setHouseholdName(data.household.name);
+      setSavedHouseholdName(data.household.name);
+      setNameMessage("Името е запазено.");
+    } catch {
+      setNameMessage("Името не можа да бъде запазено.");
+    } finally {
+      setNameSaving(false);
     }
   }
 
@@ -93,9 +137,25 @@ export default function SettingsPage() {
       {/* Household name */}
       <section className="space-y-2">
         <h2 className="text-base font-semibold text-foreground">Домакинство</h2>
-        <div className="bg-card border border-border rounded-xl p-4">
-          <p className="text-sm text-muted">Название</p>
-          <p className="text-foreground font-medium mt-1">{householdName}</p>
+        <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+          <label htmlFor="household-name" className="block text-sm text-muted">Име</label>
+          <div className="flex gap-2">
+            <input
+              id="household-name"
+              value={householdName}
+              onChange={(event) => { setHouseholdName(event.target.value); setNameMessage(""); }}
+              maxLength={80}
+              className="min-w-0 flex-1 px-3 py-2 rounded-lg border border-border bg-background text-sm text-foreground"
+            />
+            <button
+              onClick={handleSaveHouseholdName}
+              disabled={nameSaving || !householdName.trim() || householdName.trim() === savedHouseholdName}
+              className="px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium disabled:opacity-50"
+            >
+              {nameSaving ? "Запазване…" : "Запази"}
+            </button>
+          </div>
+          {nameMessage && <p className="text-sm text-muted">{nameMessage}</p>}
         </div>
       </section>
 
@@ -136,6 +196,12 @@ export default function SettingsPage() {
             >
               {loading ? "Генериране…" : "Генерирай линк за покана"}
             </button>
+
+            {inviteMessage && (
+              <p className={`text-sm ${inviteUrl ? "text-foreground" : "text-red-600"}`} role="status">
+                {inviteMessage}
+              </p>
+            )}
 
             {inviteUrl && (
               <div className="space-y-2">
