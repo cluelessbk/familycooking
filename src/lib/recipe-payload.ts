@@ -9,6 +9,7 @@ export type RecipePayload = {
   servings?: number | string | null;
   prepTime?: number | string | null;
   cookTime?: number | string | null;
+  airFryerSuitable?: boolean;
   ingredients?: IngredientInput[];
   steps?: StepInput[];
 };
@@ -47,6 +48,7 @@ export function recipeData(payload: RecipePayload, title = payload.title.trim())
     servings: optionalNumber(payload.servings, "Servings"),
     prepTime: optionalNumber(payload.prepTime, "Prep time"),
     cookTime: optionalNumber(payload.cookTime, "Cook time"),
+    airFryerSuitable: payload.airFryerSuitable === true,
     ingredients: {
       create: (payload.ingredients ?? []).map((ingredient) => ({
         name: ingredient.name.trim(),

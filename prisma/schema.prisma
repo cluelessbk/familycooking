@@ -72,6 +72,7 @@ model Recipe {
   servings    Int?
   prepTime    Int?
   cookTime    Int?
+  airFryerSuitable Boolean @default(false)
   categoryId  String?
   householdId String?
   createdAt   DateTime @default(now())

@@ -19,12 +19,14 @@ interface Recipe {
   prepTime: number | null;
   cookTime: number | null;
   category: Category | null;
+  airFryerSuitable: boolean;
 }
 
 function RecipesPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const activeCategoryId = searchParams.get("category");
+  const airFryerOnly = searchParams.get("airFryer") === "true";
 
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -41,17 +43,17 @@ function RecipesPageContent() {
   }, []);
 
   useEffect(() => {
-    setLoading(true);
-    const url = activeCategoryId
-      ? `/api/recipes?categoryId=${activeCategoryId}`
-      : "/api/recipes";
+    const params = new URLSearchParams();
+    if (activeCategoryId) params.set("categoryId", activeCategoryId);
+    if (airFryerOnly) params.set("airFryer", "true");
+    const url = `/api/recipes${params.size ? `?${params}` : ""}`;
     fetch(url)
       .then((r) => r.json())
       .then((data) => {
         setRecipes(data);
         setLoading(false);
       });
-  }, [activeCategoryId]);
+  }, [activeCategoryId, airFryerOnly]);
 
   async function saveCategory(e: React.FormEvent) {
     e.preventDefault();
@@ -73,11 +75,17 @@ function RecipesPageContent() {
   }
 
   function selectCategory(id: string | null) {
-    if (id) {
-      router.replace(`/recipes?category=${id}`);
-    } else {
-      router.replace("/recipes");
-    }
+    setLoading(true);
+    const params = new URLSearchParams(searchParams.toString());
+    if (id) params.set("category", id); else params.delete("category");
+    router.replace(`/recipes${params.size ? `?${params}` : ""}`);
+  }
+
+  function toggleAirFryer() {
+    setLoading(true);
+    const params = new URLSearchParams(searchParams.toString());
+    if (airFryerOnly) params.delete("airFryer"); else params.set("airFryer", "true");
+    router.replace(`/recipes${params.size ? `?${params}` : ""}`);
   }
 
   const filteredRecipes = recipes.filter((r) => {
@@ -113,6 +121,15 @@ function RecipesPageContent() {
 
       {/* Category filters */}
       <div className="flex flex-wrap gap-2 items-center">
+        <button
+          onClick={toggleAirFryer}
+          aria-pressed={airFryerOnly}
+          className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+            airFryerOnly ? "bg-primary text-white" : "bg-secondary text-muted hover:text-foreground"
+          }`}
+        >
+          ♨️ Еър фрайър
+        </button>
         <button
           onClick={() => selectCategory(null)}
           className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
@@ -222,6 +239,11 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
         {recipe.category && (
           <span className="inline-block bg-secondary text-muted text-xs font-medium px-2 py-0.5 rounded-full">
             {recipe.category.name}
+          </span>
+        )}
+        {recipe.airFryerSuitable && (
+          <span className="inline-block bg-primary/10 text-primary text-xs font-medium px-2 py-0.5 rounded-full ml-1">
+            ♨️ Еър фрайър
           </span>
         )}
         <h2 className="font-semibold text-foreground">{recipe.title}</h2>

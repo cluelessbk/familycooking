@@ -4,16 +4,16 @@ Updated: 2026-08-16
 
 ## Current work
 
-Version 1.3.1 fixes the first production feedback from household collaboration. Any verified household member can edit the shared household name. Invite creation now displays and automatically copies the generated URL, with visible success and failure feedback. Email login codes and their resend countdown now use a consistent five-minute window.
+Version 1.4.0 is implemented locally. Recipes now have an independent Air Fryer suitability flag, editable in both create and edit forms, visible as a badge, preserved when recipes are copied, and filterable together with any category. A global mobile form-control rule prevents iOS Safari's automatic focus zoom by keeping editable controls at a minimum 16px font size on phone widths.
 
 ## Verification
 
-- Targeted ESLint passes for every changed file.
+- Prisma client generation passes with the new `airFryerSuitable` field and migration.
+- Targeted ESLint passes with no errors (four pre-existing image optimization warnings remain).
 - Next.js 16.2.1 production build and TypeScript validation pass.
 - `git diff --check` passes.
-- Production logs confirmed both reported invite POST requests returned HTTP 200; the defect was missing client-side feedback rather than invite creation failure.
-- No database migration is required.
+- The mobile fix covers all `input`, `textarea`, and `select` controls globally, while excluding checkbox and radio controls.
 
 ## Next action
 
-Push and deploy v1.3.1 after Rumen's approval.
+Push and deploy v1.4.0 after Rumen's approval, then verify the production migration and Air Fryer API filter.

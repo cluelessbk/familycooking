@@ -49,6 +49,7 @@ export async function POST(
         servings: recipe.servings,
         prepTime: recipe.prepTime,
         cookTime: recipe.cookTime,
+        airFryerSuitable: recipe.airFryerSuitable,
         householdId,
         categoryId: categoryId ?? null,
         ingredients: {

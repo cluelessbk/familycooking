@@ -48,6 +48,11 @@ export default async function RecipeDetailPage({
               {recipe.category.name}
             </span>
           )}
+          {recipe.airFryerSuitable && (
+            <span className="inline-block bg-primary/10 text-primary text-xs font-medium px-2 py-0.5 rounded-full ml-1">
+              ♨️ Подходяща за еър фрайър
+            </span>
+          )}
           <h1 className="text-2xl font-bold text-foreground">{recipe.title}</h1>
         </div>
         <div className="flex flex-wrap gap-2 justify-center">

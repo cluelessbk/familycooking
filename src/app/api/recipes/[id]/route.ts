@@ -46,7 +46,7 @@ export async function PUT(
 
   const { id } = await params;
   const body = await request.json();
-  const { title, description, photoUrl, categoryId, servings, prepTime, cookTime, ingredients, steps } = body;
+  const { title, description, photoUrl, categoryId, servings, prepTime, cookTime, airFryerSuitable, ingredients, steps } = body;
 
   if (!title) {
     return Response.json({ error: "Title is required" }, { status: 400 });
@@ -71,6 +71,7 @@ export async function PUT(
       servings: servings ? Number(servings) : null,
       prepTime: prepTime ? Number(prepTime) : null,
       cookTime: cookTime ? Number(cookTime) : null,
+      airFryerSuitable: airFryerSuitable === true,
       ingredients: {
         create: (ingredients ?? []).map((ing: { name: string; quantity?: number; unit?: string }) => ({
           name: ing.name,

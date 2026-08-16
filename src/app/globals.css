@@ -36,6 +36,17 @@ body {
   overflow-x: hidden;
 }
 
+/* iOS Safari zooms the whole page when a form control below 16px receives
+   focus. Keep every editable control at the safe size on phones, including
+   controls styled with Tailwind's text-sm/text-xs utilities. */
+@media (max-width: 639px) {
+  input:not([type="checkbox"]):not([type="radio"]),
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
 @keyframes fade-in {
   from { opacity: 0; transform: translate(-50%, -8px); }
   to { opacity: 1; transform: translate(-50%, 0); }

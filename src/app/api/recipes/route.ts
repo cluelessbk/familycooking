@@ -10,11 +10,13 @@ export async function GET(request: NextRequest) {
   const householdId = session.user.householdId;
 
   const categoryId = request.nextUrl.searchParams.get("categoryId");
+  const airFryerOnly = request.nextUrl.searchParams.get("airFryer") === "true";
 
   const recipes = await prisma.recipe.findMany({
     where: {
       householdId,
       ...(categoryId ? { categoryId } : {}),
+      ...(airFryerOnly ? { airFryerSuitable: true } : {}),
     },
     include: { category: true },
     orderBy: { createdAt: "desc" },
@@ -31,7 +33,7 @@ export async function POST(request: Request) {
   const householdId = session.user.householdId;
 
   const body = await request.json();
-  const { title, description, photoUrl, categoryId, servings, prepTime, cookTime, ingredients, steps } = body;
+  const { title, description, photoUrl, categoryId, servings, prepTime, cookTime, airFryerSuitable, ingredients, steps } = body;
 
   if (!title) {
     return Response.json({ error: "Title is required" }, { status: 400 });
@@ -47,6 +49,7 @@ export async function POST(request: Request) {
       servings: servings ? Number(servings) : null,
       prepTime: prepTime ? Number(prepTime) : null,
       cookTime: cookTime ? Number(cookTime) : null,
+      airFryerSuitable: airFryerSuitable === true,
       ingredients: {
         create: (ingredients ?? []).map((ing: { name: string; quantity?: number; unit?: string }) => ({
           name: ing.name,

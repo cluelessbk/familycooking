@@ -1,0 +1,1 @@
+ALTER TABLE "Recipe" ADD COLUMN "airFryerSuitable" BOOLEAN NOT NULL DEFAULT false;
