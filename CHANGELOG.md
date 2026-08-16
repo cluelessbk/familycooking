@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.1] - 2026-08-16
+
+### Changed
+- Cooking Methods filter now appears before categories with a distinct muted-lavender treatment
+- Cooking-method selectors use consistent SVG chevrons instead of text glyphs
+- Recipe-form cooking method dropdown matches the category control more closely and closes on outside click or Escape
+- Bulk manager explains that a recipe can use both methods and shows the assignment count for each method
+
 ## [1.5.0] - 2026-08-16
 
 ### Added

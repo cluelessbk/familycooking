@@ -96,11 +96,11 @@ export function CookingMethodManager({ onSaved, prominent = false }: { onSaved: 
       <div role="dialog" aria-modal="true" aria-labelledby="method-manager-title" className="bg-card w-full max-w-md rounded-2xl shadow-xl overflow-hidden" onClick={(event) => event.stopPropagation()}>
         <div className="p-4 border-b border-border space-y-3">
           <div className="flex items-center justify-between gap-3">
-            <div><h2 id="method-manager-title" className="font-semibold text-foreground">Методи на готвене</h2><p className="text-xs text-muted mt-0.5">Избрани: {selectedIds.size}</p></div>
+            <div><h2 id="method-manager-title" className="font-semibold text-foreground">Методи на готвене</h2><p className="text-xs text-muted mt-0.5">Избери метод, после маркирай рецептите. Една рецепта може да е и в двата.</p></div>
             <button type="button" onClick={() => setOpen(false)} disabled={saving} className="text-muted hover:text-foreground text-lg" aria-label="Затвори">✕</button>
           </div>
           <div className="flex gap-2 overflow-x-auto pb-1">
-            {COOKING_METHODS.map((method) => <button key={method.id} type="button" onClick={() => setActiveMethodId(method.id)} className={`shrink-0 rounded-full px-3 py-1.5 text-sm font-medium ${activeMethodId === method.id ? cookingMethodBadgeClass(method.color) + " ring-2 ring-current/30" : "bg-secondary text-muted"}`}>{method.icon} {method.name}</button>)}
+            {COOKING_METHODS.map((method) => <button key={method.id} type="button" onClick={() => setActiveMethodId(method.id)} className={`shrink-0 rounded-full px-3 py-1.5 text-sm font-medium ${activeMethodId === method.id ? cookingMethodBadgeClass(method.color) + " ring-2 ring-current/30" : "bg-secondary text-muted"}`}>{method.icon} {method.name} ({selectedByMethod[method.id]?.size ?? 0})</button>)}
           </div>
           <input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder={`Търси за ${activeMethod.name}…`} className="w-full border border-border rounded-lg px-3 py-2 bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary text-sm" autoFocus />
         </div>

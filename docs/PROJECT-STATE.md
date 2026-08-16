@@ -4,18 +4,16 @@ Updated: 2026-08-16
 
 ## Current work
 
-Version 1.4.1 is implemented locally. In addition to the Air Fryer suitability flag and filter from v1.4.0, the Air Fryer list now has a searchable multi-select picker. It preselects current Air Fryer recipes and saves additions/removals in one household-scoped operation. The picker replaces the empty-state new-recipe action while the Air Fryer filter is active and remains available when the list has recipes.
+Version 1.5.1 is approved for production as a refinement of the scalable cooking-method system. Cooking Methods now precede categories with a distinct muted-lavender filter button. Both method dropdowns use consistent SVG chevrons; the recipe-form selector closes on outside click or Escape. The bulk manager continues to edit one method tab at a time while preserving and saving assignments for every method, and now makes dual assignment explicit with per-method counts.
 
 ## Verification
 
-- Prisma client generation passes with the new `airFryerSuitable` field and migration.
-- Targeted ESLint passes with no errors (four pre-existing image optimization warnings remain).
+- Targeted ESLint passes with no errors (one pre-existing image optimization warning remains in the checked recipe page).
 - Next.js 16.2.1 production build and TypeScript validation pass.
 - `git diff --check` passes.
-- The mobile fix covers all `input`, `textarea`, and `select` controls globally, while excluding checkbox and radio controls.
-- The v1.4.1 production build, TypeScript validation, targeted ESLint, and `git diff --check` pass.
-- Bulk updates are restricted to recipe IDs in the signed-in user's household.
+- Cooking-method menus close on outside pointer interaction and Escape; the form selector also toggles closed from its button.
+- Bulk manager assignments for both cooking methods are retained while switching tabs and committed together by `Save all`.
 
 ## Next action
 
-Rumen should review v1.4.1 at `https://familycooking-af-preview.vercel.app`. If approved, push the two local commits and deploy/promote v1.4.1 to production. Production remains on v1.3.1 until explicit approval.
+Rumen should review v1.5.1 at `https://familycooking-af-preview.vercel.app`. If approved, push the local v1.5.0 and v1.5.1 commits and deploy/promote them to production. Production remains on v1.4.1 until explicit approval.

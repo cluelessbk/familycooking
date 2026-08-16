@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ShareButton } from "@/components/recipes/ShareButton";
@@ -39,6 +39,24 @@ function RecipesPageContent() {
   const [newCategoryName, setNewCategoryName] = useState("");
   const [savingCategory, setSavingCategory] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [methodMenuOpen, setMethodMenuOpen] = useState(false);
+  const methodMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!methodMenuOpen) return;
+    function closeOnOutsideClick(event: PointerEvent) {
+      if (!methodMenuRef.current?.contains(event.target as Node)) setMethodMenuOpen(false);
+    }
+    function closeOnEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") setMethodMenuOpen(false);
+    }
+    document.addEventListener("pointerdown", closeOnOutsideClick);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsideClick);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [methodMenuOpen]);
 
   useEffect(() => {
     fetch("/api/categories")
@@ -129,8 +147,32 @@ function RecipesPageContent() {
         className="w-full border border-border rounded-lg px-4 py-2.5 bg-background text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary text-sm"
       />
 
-      {/* Category filters */}
+      {/* Cooking method and category filters */}
       <div className="flex flex-wrap gap-2 items-center">
+        <div className="relative" ref={methodMenuRef}>
+          <button
+            type="button"
+            aria-haspopup="true"
+            aria-expanded={methodMenuOpen}
+            onClick={() => setMethodMenuOpen((current) => !current)}
+            className="cursor-pointer px-3 py-1.5 rounded-full text-sm font-medium bg-[#E9DDF7] text-[#6B3FA0] hover:bg-[#DFCEF2] dark:bg-[#3F285A] dark:text-[#E9DDF7] dark:hover:bg-[#4C316B] flex items-center gap-1.5 transition-colors"
+          >
+            Методи{selectedMethods.length ? ` (${selectedMethods.length})` : ""}
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" className={`h-3.5 w-3.5 transition-transform ${methodMenuOpen ? "rotate-180" : ""}`} aria-hidden="true">
+              <path d="m5 7.5 5 5 5-5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+          {methodMenuOpen && <div className="absolute z-30 mt-2 left-0 min-w-64 rounded-xl border border-border bg-card shadow-lg p-2">
+            {COOKING_METHODS.map((method) => (
+              <label key={method.id} className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-secondary cursor-pointer">
+                <input type="checkbox" checked={selectedMethods.includes(method.id)} onChange={() => toggleMethod(method.id)} className="h-5 w-5 accent-primary" />
+                <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${cookingMethodBadgeClass(method.color)}`}>{method.icon} {method.name}</span>
+              </label>
+            ))}
+            <p className="px-3 pt-2 pb-1 text-xs text-muted">Избраните методи се комбинират с „или“.</p>
+          </div>}
+        </div>
+        <span className="text-border text-xl px-1" aria-hidden="true">|</span>
         <button
           onClick={() => selectCategory(null)}
           className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
@@ -188,21 +230,6 @@ function RecipesPageContent() {
             + Категория
           </button>
         )}
-        <span className="text-border text-xl px-1" aria-hidden="true">|</span>
-        <details className="relative group">
-          <summary className="list-none cursor-pointer px-3 py-1.5 rounded-full text-sm font-medium bg-secondary text-muted hover:text-foreground flex items-center gap-1.5">
-            Методи{selectedMethods.length ? ` (${selectedMethods.length})` : ""} <span className="group-open:rotate-180 transition-transform">⌄</span>
-          </summary>
-          <div className="absolute z-30 mt-2 right-0 sm:left-0 sm:right-auto min-w-64 rounded-xl border border-border bg-card shadow-lg p-2">
-            {COOKING_METHODS.map((method) => (
-              <label key={method.id} className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-secondary cursor-pointer">
-                <input type="checkbox" checked={selectedMethods.includes(method.id)} onChange={() => toggleMethod(method.id)} className="h-5 w-5 accent-primary" />
-                <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${cookingMethodBadgeClass(method.color)}`}>{method.icon} {method.name}</span>
-              </label>
-            ))}
-            <p className="px-3 pt-2 pb-1 text-xs text-muted">Избраните методи се комбинират с „или“.</p>
-          </div>
-        </details>
       </div>
 
       {/* Recipes grid */}
