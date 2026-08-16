@@ -74,7 +74,16 @@ export async function POST(req: NextRequest) {
       subject: "Твоят код за вход в FamilyCooking",
       text: `Твоят код за вход в FamilyCooking е: ${code}\n\nКодът е валиден 5 минути.`,
     });
-  } catch {
+  } catch (error) {
+    const smtpError = error as { code?: string; command?: string; responseCode?: number };
+    console.error("Failed to send login code", {
+      code: smtpError.code,
+      command: smtpError.command,
+      responseCode: smtpError.responseCode,
+    });
+    await prisma.verificationToken.deleteMany({
+      where: { identifier: email, token: code },
+    });
     return Response.json({ error: "Failed to send email" }, { status: 500 });
   }
 
