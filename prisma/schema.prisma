@@ -85,6 +85,24 @@ model Recipe {
   plannedMeals PlannedMeal[]
   shareTokens ShareToken[]
   publisherAuditLogs PublisherAuditLog[]
+  cookingMethods RecipeCookingMethod[]
+}
+
+model CookingMethod {
+  id       String @id
+  name     String
+  icon     String
+  color    String
+  recipes  RecipeCookingMethod[]
+}
+
+model RecipeCookingMethod {
+  recipeId       String
+  cookingMethodId String
+  recipe         Recipe        @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  cookingMethod  CookingMethod @relation(fields: [cookingMethodId], references: [id], onDelete: Cascade)
+
+  @@id([recipeId, cookingMethodId])
 }
 
 model ShareToken {

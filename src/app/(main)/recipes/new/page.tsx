@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useFitText } from "@/hooks/useFitText";
 import { useRouter } from "next/navigation";
+import { CookingMethodSelect } from "@/components/recipes/CookingMethodSelect";
 
 interface Category {
   id: string;
@@ -33,7 +34,7 @@ export default function NewRecipePage() {
   const [servings, setServings] = useState("");
   const [prepTime, setPrepTime] = useState("");
   const [cookTime, setCookTime] = useState("");
-  const [airFryerSuitable, setAirFryerSuitable] = useState(false);
+  const [cookingMethodIds, setCookingMethodIds] = useState<string[]>([]);
   const [ingredients, setIngredients] = useState<IngredientRow[]>([
     { name: "", quantity: "", unit: "" },
   ]);
@@ -118,7 +119,7 @@ export default function NewRecipePage() {
       servings: servings ? Number(servings) : undefined,
       prepTime: prepTime ? Number(prepTime) : undefined,
       cookTime: cookTime ? Number(cookTime) : undefined,
-      airFryerSuitable,
+      cookingMethodIds,
       ingredients: ingredients
         .filter((ing) => ing.name.trim())
         .map((ing) => ({
@@ -210,15 +211,7 @@ export default function NewRecipePage() {
             </select>
           </div>
 
-          <label className="flex items-center gap-3 rounded-lg border border-border bg-background px-4 py-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={airFryerSuitable}
-              onChange={(e) => setAirFryerSuitable(e.target.checked)}
-              className="h-5 w-5 accent-primary"
-            />
-            <span className="font-medium text-foreground">Подходяща за еър фрайър</span>
-          </label>
+          <CookingMethodSelect selected={cookingMethodIds} onChange={setCookingMethodIds} />
 
           <div className="grid grid-cols-3 gap-3">
             <div className="space-y-1">

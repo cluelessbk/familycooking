@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.5.0] - 2026-08-16
+
+### Added
+- Scalable cooking-method system with Air Fryer and Pressure Cooker
+- Multi-select cooking-method dropdown on recipe create and edit forms
+- Combined cooking-method manager for bulk recipe assignment
+- Multi-method recipe filtering with OR logic and distinct teal/violet badges
+
+### Changed
+- Air Fryer is visually separated from recipe categories and migrated without losing existing assignments
+- Shared recipe copies and publisher API payloads preserve cooking methods
+
 ## [1.3.0] - 2026-08-16
 
 ### Added

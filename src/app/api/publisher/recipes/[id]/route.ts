@@ -36,6 +36,7 @@ export async function PUT(request: Request, { params }: Context) {
     const recipe = await prisma.$transaction(async (tx) => {
       await tx.recipeIngredient.deleteMany({ where: { recipeId: id } });
       await tx.recipeStep.deleteMany({ where: { recipeId: id } });
+      await tx.recipeCookingMethod.deleteMany({ where: { recipeId: id } });
       return tx.recipe.update({
         where: { id },
         data: recipeData(payload),

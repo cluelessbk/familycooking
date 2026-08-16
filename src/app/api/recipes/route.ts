@@ -1,6 +1,9 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
+import { COOKING_METHODS } from "@/lib/cooking-methods";
+
+const validMethodIds = new Set<string>(COOKING_METHODS.map((method) => method.id));
 
 export async function GET(request: NextRequest) {
   const session = await auth();
@@ -10,15 +13,15 @@ export async function GET(request: NextRequest) {
   const householdId = session.user.householdId;
 
   const categoryId = request.nextUrl.searchParams.get("categoryId");
-  const airFryerOnly = request.nextUrl.searchParams.get("airFryer") === "true";
+  const cookingMethods = request.nextUrl.searchParams.get("methods")?.split(",").filter(Boolean) ?? [];
 
   const recipes = await prisma.recipe.findMany({
     where: {
       householdId,
       ...(categoryId ? { categoryId } : {}),
-      ...(airFryerOnly ? { airFryerSuitable: true } : {}),
+      ...(cookingMethods.length ? { cookingMethods: { some: { cookingMethodId: { in: cookingMethods } } } } : {}),
     },
-    include: { category: true },
+    include: { category: true, cookingMethods: { include: { cookingMethod: true } } },
     orderBy: { createdAt: "desc" },
   });
 
@@ -33,10 +36,13 @@ export async function POST(request: Request) {
   const householdId = session.user.householdId;
 
   const body = await request.json();
-  const { title, description, photoUrl, categoryId, servings, prepTime, cookTime, airFryerSuitable, ingredients, steps } = body;
+  const { title, description, photoUrl, categoryId, servings, prepTime, cookTime, cookingMethodIds = [], ingredients, steps } = body;
 
   if (!title) {
     return Response.json({ error: "Title is required" }, { status: 400 });
+  }
+  if (!Array.isArray(cookingMethodIds) || cookingMethodIds.some((id) => typeof id !== "string" || !validMethodIds.has(id))) {
+    return Response.json({ error: "Invalid cooking methods" }, { status: 400 });
   }
 
   const recipe = await prisma.recipe.create({
@@ -49,7 +55,10 @@ export async function POST(request: Request) {
       servings: servings ? Number(servings) : null,
       prepTime: prepTime ? Number(prepTime) : null,
       cookTime: cookTime ? Number(cookTime) : null,
-      airFryerSuitable: airFryerSuitable === true,
+      airFryerSuitable: cookingMethodIds.includes("air-fryer"),
+      cookingMethods: {
+        create: cookingMethodIds.map((cookingMethodId: string) => ({ cookingMethodId })),
+      },
       ingredients: {
         create: (ingredients ?? []).map((ing: { name: string; quantity?: number; unit?: string }) => ({
           name: ing.name,
@@ -64,7 +73,7 @@ export async function POST(request: Request) {
         })),
       },
     },
-    include: { category: true, ingredients: true, steps: true },
+    include: { category: true, ingredients: true, steps: true, cookingMethods: { include: { cookingMethod: true } } },
   });
 
   return Response.json(recipe, { status: 201 });

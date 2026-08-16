@@ -6,6 +6,7 @@ import { FlowchartSteps } from "@/components/recipes/flowchart-steps";
 import { AddToMealPlanButton } from "@/components/recipes/AddToMealPlanButton";
 import { BackButton } from "@/components/recipes/BackButton";
 import { ShareButton } from "@/components/recipes/ShareButton";
+import { cookingMethodBadgeClass } from "@/lib/cooking-methods";
 
 export default async function RecipeDetailPage({
   params,
@@ -26,6 +27,7 @@ export default async function RecipeDetailPage({
       category: true,
       ingredients: true,
       steps: { orderBy: { stepNumber: "asc" } },
+      cookingMethods: { include: { cookingMethod: true } },
     },
   });
 
@@ -48,11 +50,11 @@ export default async function RecipeDetailPage({
               {recipe.category.name}
             </span>
           )}
-          {recipe.airFryerSuitable && (
-            <span className="inline-block bg-primary/10 text-primary text-xs font-medium px-2 py-0.5 rounded-full ml-1">
-              ♨️ Подходяща за еър фрайър
+          {recipe.cookingMethods.map(({ cookingMethod }) => (
+            <span key={cookingMethod.id} className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full ml-1 ${cookingMethodBadgeClass(cookingMethod.color)}`}>
+              {cookingMethod.icon} Подходяща за {cookingMethod.name.toLocaleLowerCase("bg")}
             </span>
-          )}
+          ))}
           <h1 className="text-2xl font-bold text-foreground">{recipe.title}</h1>
         </div>
         <div className="flex flex-wrap gap-2 justify-center">

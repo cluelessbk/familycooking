@@ -4,7 +4,8 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ShareButton } from "@/components/recipes/ShareButton";
-import { AirFryerRecipePicker } from "@/components/recipes/AirFryerRecipePicker";
+import { CookingMethodManager } from "@/components/recipes/CookingMethodManager";
+import { COOKING_METHODS, cookingMethodBadgeClass } from "@/lib/cooking-methods";
 
 interface Category {
   id: string;
@@ -20,14 +21,15 @@ interface Recipe {
   prepTime: number | null;
   cookTime: number | null;
   category: Category | null;
-  airFryerSuitable: boolean;
+  cookingMethods: { cookingMethod: { id: string; name: string; icon: string; color: string } }[];
 }
 
 function RecipesPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const activeCategoryId = searchParams.get("category");
-  const airFryerOnly = searchParams.get("airFryer") === "true";
+  const selectedMethods = searchParams.get("methods")?.split(",").filter(Boolean) ?? [];
+  const selectedMethodsKey = selectedMethods.join(",");
 
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -47,7 +49,7 @@ function RecipesPageContent() {
   useEffect(() => {
     const params = new URLSearchParams();
     if (activeCategoryId) params.set("categoryId", activeCategoryId);
-    if (airFryerOnly) params.set("airFryer", "true");
+    if (selectedMethodsKey) params.set("methods", selectedMethodsKey);
     const url = `/api/recipes${params.size ? `?${params}` : ""}`;
     fetch(url)
       .then((r) => r.json())
@@ -55,7 +57,7 @@ function RecipesPageContent() {
         setRecipes(data);
         setLoading(false);
       });
-  }, [activeCategoryId, airFryerOnly, refreshKey]);
+  }, [activeCategoryId, selectedMethodsKey, refreshKey]);
 
   async function saveCategory(e: React.FormEvent) {
     e.preventDefault();
@@ -83,10 +85,13 @@ function RecipesPageContent() {
     router.replace(`/recipes${params.size ? `?${params}` : ""}`);
   }
 
-  function toggleAirFryer() {
+  function toggleMethod(methodId: string) {
     setLoading(true);
     const params = new URLSearchParams(searchParams.toString());
-    if (airFryerOnly) params.delete("airFryer"); else params.set("airFryer", "true");
+    const next = selectedMethods.includes(methodId)
+      ? selectedMethods.filter((id) => id !== methodId)
+      : [...selectedMethods, methodId];
+    if (next.length) params.set("methods", next.join(",")); else params.delete("methods");
     router.replace(`/recipes${params.size ? `?${params}` : ""}`);
   }
 
@@ -105,9 +110,7 @@ function RecipesPageContent() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold text-foreground">Рецепти</h1>
         <div className="flex items-center gap-2 w-full sm:w-auto">
-          {airFryerOnly && !loading && filteredRecipes.length > 0 && (
-            <AirFryerRecipePicker onSaved={() => { setLoading(true); setRefreshKey((key) => key + 1); }} />
-          )}
+          <CookingMethodManager onSaved={() => { setLoading(true); setRefreshKey((key) => key + 1); }} />
           <Link
             href="/recipes/new"
             className="flex-1 sm:flex-none text-center bg-primary text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-primary-dark transition-colors"
@@ -128,15 +131,6 @@ function RecipesPageContent() {
 
       {/* Category filters */}
       <div className="flex flex-wrap gap-2 items-center">
-        <button
-          onClick={toggleAirFryer}
-          aria-pressed={airFryerOnly}
-          className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-            airFryerOnly ? "bg-primary text-white" : "bg-secondary text-muted hover:text-foreground"
-          }`}
-        >
-          ♨️ Еър фрайър
-        </button>
         <button
           onClick={() => selectCategory(null)}
           className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
@@ -194,6 +188,21 @@ function RecipesPageContent() {
             + Категория
           </button>
         )}
+        <span className="text-border text-xl px-1" aria-hidden="true">|</span>
+        <details className="relative group">
+          <summary className="list-none cursor-pointer px-3 py-1.5 rounded-full text-sm font-medium bg-secondary text-muted hover:text-foreground flex items-center gap-1.5">
+            Методи{selectedMethods.length ? ` (${selectedMethods.length})` : ""} <span className="group-open:rotate-180 transition-transform">⌄</span>
+          </summary>
+          <div className="absolute z-30 mt-2 right-0 sm:left-0 sm:right-auto min-w-64 rounded-xl border border-border bg-card shadow-lg p-2">
+            {COOKING_METHODS.map((method) => (
+              <label key={method.id} className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-secondary cursor-pointer">
+                <input type="checkbox" checked={selectedMethods.includes(method.id)} onChange={() => toggleMethod(method.id)} className="h-5 w-5 accent-primary" />
+                <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${cookingMethodBadgeClass(method.color)}`}>{method.icon} {method.name}</span>
+              </label>
+            ))}
+            <p className="px-3 pt-2 pb-1 text-xs text-muted">Избраните методи се комбинират с „или“.</p>
+          </div>
+        </details>
       </div>
 
       {/* Recipes grid */}
@@ -202,8 +211,8 @@ function RecipesPageContent() {
       ) : filteredRecipes.length === 0 ? (
         <div className="text-center py-16">
           <p className="text-muted mb-4">Няма рецепти.</p>
-          {airFryerOnly ? (
-            <AirFryerRecipePicker
+          {selectedMethods.length ? (
+            <CookingMethodManager
               prominent
               onSaved={() => { setLoading(true); setRefreshKey((key) => key + 1); }}
             />
@@ -255,11 +264,11 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
             {recipe.category.name}
           </span>
         )}
-        {recipe.airFryerSuitable && (
-          <span className="inline-block bg-primary/10 text-primary text-xs font-medium px-2 py-0.5 rounded-full ml-1">
-            ♨️ Еър фрайър
+        {recipe.cookingMethods.map(({ cookingMethod }) => (
+          <span key={cookingMethod.id} className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full ml-1 ${cookingMethodBadgeClass(cookingMethod.color)}`}>
+            {cookingMethod.icon} {cookingMethod.name}
           </span>
-        )}
+        ))}
         <h2 className="font-semibold text-foreground">{recipe.title}</h2>
         {recipe.description && (
           <p className="text-sm text-muted line-clamp-2">{recipe.description}</p>

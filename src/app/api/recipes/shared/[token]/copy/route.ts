@@ -20,6 +20,7 @@ export async function POST(
         include: {
           ingredients: true,
           steps: { orderBy: { stepNumber: "asc" } },
+          cookingMethods: true,
         },
       },
     },
@@ -50,6 +51,9 @@ export async function POST(
         prepTime: recipe.prepTime,
         cookTime: recipe.cookTime,
         airFryerSuitable: recipe.airFryerSuitable,
+        cookingMethods: {
+          create: recipe.cookingMethods.map((item) => ({ cookingMethodId: item.cookingMethodId })),
+        },
         householdId,
         categoryId: categoryId ?? null,
         ingredients: {

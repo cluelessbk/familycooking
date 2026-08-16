@@ -1,3 +1,5 @@
+import { COOKING_METHODS } from "@/lib/cooking-methods";
+
 type IngredientInput = { name: string; quantity?: number | string | null; unit?: string | null };
 type StepInput = { stepNumber?: number; instruction: string };
 
@@ -10,6 +12,7 @@ export type RecipePayload = {
   prepTime?: number | string | null;
   cookTime?: number | string | null;
   airFryerSuitable?: boolean;
+  cookingMethodIds?: string[];
   ingredients?: IngredientInput[];
   steps?: StepInput[];
 };
@@ -27,6 +30,10 @@ export function validateRecipePayload(value: unknown): RecipePayload {
   if (typeof payload.title !== "string" || !payload.title.trim()) throw new Error("Title is required");
   if (payload.ingredients !== undefined && !Array.isArray(payload.ingredients)) throw new Error("Ingredients must be an array");
   if (payload.steps !== undefined && !Array.isArray(payload.steps)) throw new Error("Steps must be an array");
+  const validMethodIds = new Set<string>(COOKING_METHODS.map((method) => method.id));
+  if (payload.cookingMethodIds !== undefined && (!Array.isArray(payload.cookingMethodIds) || payload.cookingMethodIds.some((id) => typeof id !== "string" || !validMethodIds.has(id)))) {
+    throw new Error("Invalid cooking methods");
+  }
   if (payload.ingredients?.some((item) => !item || typeof item.name !== "string" || !item.name.trim())) {
     throw new Error("Every ingredient requires a name");
   }
@@ -40,6 +47,7 @@ export function validateRecipePayload(value: unknown): RecipePayload {
 }
 
 export function recipeData(payload: RecipePayload, title = payload.title.trim()) {
+  const cookingMethodIds = payload.cookingMethodIds ?? (payload.airFryerSuitable ? ["air-fryer"] : []);
   return {
     title,
     description: payload.description?.trim() || null,
@@ -48,7 +56,8 @@ export function recipeData(payload: RecipePayload, title = payload.title.trim())
     servings: optionalNumber(payload.servings, "Servings"),
     prepTime: optionalNumber(payload.prepTime, "Prep time"),
     cookTime: optionalNumber(payload.cookTime, "Cook time"),
-    airFryerSuitable: payload.airFryerSuitable === true,
+    airFryerSuitable: cookingMethodIds.includes("air-fryer"),
+    cookingMethods: { create: cookingMethodIds.map((cookingMethodId) => ({ cookingMethodId })) },
     ingredients: {
       create: (payload.ingredients ?? []).map((ingredient) => ({
         name: ingredient.name.trim(),
@@ -69,4 +78,5 @@ export const fullRecipeInclude = {
   category: true,
   ingredients: true,
   steps: { orderBy: { stepNumber: "asc" as const } },
+  cookingMethods: { include: { cookingMethod: true } },
 };
