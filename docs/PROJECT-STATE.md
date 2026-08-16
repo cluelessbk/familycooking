@@ -1,19 +1,19 @@
 # Project State
 
-Updated: 2026-08-11
+Updated: 2026-08-16
 
 ## Current work
 
-Household-scoped recipe publisher API implemented on top of `master` v1.1.0. It includes owner-managed hashed keys, revocation, rate limiting, audit records, recipe CRUD, category lookup, image upload, and automatic `(Jarvis)` signing for newly created recipes.
+Version 1.3.0 household collaboration is implemented locally. Direct registrations create an empty household owned by the registrant. Invitation registrations join the inviting household as members. All members can create invitations, while owners have a dedicated Administration panel for member roles, removal, and invitation revocation. Multiple owners are supported with a final-owner safeguard.
 
 ## Verification
 
-- Prisma migration applied successfully to a clean local SQLite database.
-- Targeted ESLint passed.
-- Next.js production build passed.
-- Local API integration checks passed: unauthorized 401, create 201 with signature, search/list 200, update 200 without forced signature, cross-household lookup 404, deletion confirmation 400/200, audit records written.
-- Full repository lint remains blocked by four pre-existing errors in groceries, planner, and recipe list pages.
+- Targeted ESLint passes for every changed and added file.
+- Next.js 16.2.1 production build and TypeScript validation pass, including the new `/admin` page and member-management API.
+- `git diff --check` passes.
+- Full repository lint remains blocked by four pre-existing errors in groceries, planner, and recipe list pages; this change introduces no new lint errors.
+- No database migration is required because the existing household, membership, and invitation tables support this feature.
 
 ## Next action
 
-The local v1.2.0 commit is ready. Present the combined v1.1.0 + v1.2.0 deployment package to Rumen. Do not push or deploy without explicit approval.
+Review the local v1.3.0 commit with Rumen. Do not push or deploy without explicit approval.

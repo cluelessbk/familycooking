@@ -21,7 +21,8 @@ function getTransporter() {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const email = body?.email as string | undefined;
+  const rawEmail = body?.email as string | undefined;
+  const email = rawEmail?.trim().toLowerCase();
 
   if (!email || typeof email !== "string") {
     return Response.json({ error: "Invalid email" }, { status: 400 });

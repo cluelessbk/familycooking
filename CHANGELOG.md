@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.3.0] - 2026-08-16
+
+### Added
+- Owner-only Administration panel with a household member list
+- Promote members to owners and demote owners to members
+- Remove household members and revoke active invitation links
+- Owner-only Administration navigation on desktop and mobile
+
+### Changed
+- Every household member can create a seven-day, single-use invitation link
+- Direct registrations create a new empty household with the registrant as owner
+- Invitation registrations join the inviter's household as a member
+- Household membership and role are refreshed from the database on every authenticated request
+
+### Security
+- Existing accounts cannot be silently moved between households through an invitation
+- Removed members lose household access immediately
+- The final owner cannot be demoted or removed
+- Invitation consumption and membership creation are atomic
+
 ## [1.1.0] - 2026-03-28
 
 ### Added

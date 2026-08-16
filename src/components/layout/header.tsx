@@ -4,7 +4,7 @@ import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export function Header() {
+export function Header({ isOwner }: { isOwner: boolean }) {
   const pathname = usePathname();
 
   return (
@@ -30,6 +30,11 @@ export function Header() {
             <Link href="/settings" className="text-sm text-muted hover:text-foreground transition-colors">
               Настройки
             </Link>
+            {isOwner && (
+              <Link href="/admin" className="text-sm text-muted hover:text-foreground transition-colors">
+                Администрация
+              </Link>
+            )}
             <button
               onClick={() => signOut({ callbackUrl: "/signin" })}
               className="text-sm text-muted hover:text-accent transition-colors"
@@ -78,6 +83,26 @@ export function Header() {
             <span className="text-xl">🛒</span>
             Пазаруване
           </Link>
+          <Link
+            href="/settings"
+            className={`flex flex-col items-center gap-0.5 text-xs font-medium transition-colors ${
+              pathname.startsWith("/settings") ? "text-primary" : "text-muted"
+            }`}
+          >
+            <span className="text-xl">👤</span>
+            Настройки
+          </Link>
+          {isOwner && (
+            <Link
+              href="/admin"
+              className={`flex flex-col items-center gap-0.5 text-xs font-medium transition-colors ${
+                pathname.startsWith("/admin") ? "text-primary" : "text-muted"
+              }`}
+            >
+              <span className="text-xl">⚙️</span>
+              Админ
+            </Link>
+          )}
         </div>
       </nav>
     </>

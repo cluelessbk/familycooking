@@ -27,6 +27,7 @@ export async function GET() {
   return Response.json({
     household: { id: household.id, name: household.name },
     members: household.members,
+    myUserId: userId,
     myRole: myMember?.role ?? "MEMBER",
   });
 }

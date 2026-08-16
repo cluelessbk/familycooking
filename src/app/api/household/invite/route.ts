@@ -2,8 +2,8 @@ import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { NextRequest } from "next/server";
 
-// POST — generate a new invite link (owner only)
-export async function POST() {
+// POST — every household member may invite another member.
+export async function POST(req: NextRequest) {
   const session = await auth();
   if (!session?.user?.householdId) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
@@ -11,13 +11,12 @@ export async function POST() {
   const householdId = session.user.householdId;
   const userId = session.user.id;
 
-  // Verify OWNER role
   const member = await prisma.householdMember.findUnique({
     where: { userId },
     select: { role: true },
   });
-  if (member?.role !== "OWNER") {
-    return Response.json({ error: "Only owners can create invite links" }, { status: 403 });
+  if (!member) {
+    return Response.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const token = crypto.randomUUID();
@@ -27,13 +26,13 @@ export async function POST() {
     data: { token, householdId, createdBy: userId, expiresAt },
   });
 
-  const url = `${process.env.NEXTAUTH_URL ?? ""}/join/${invite.token}`;
+  const url = `${req.nextUrl.origin}/join/${invite.token}`;
 
   return Response.json({ url, expiresAt: invite.expiresAt });
 }
 
 // GET — list active invite links (owner only)
-export async function GET() {
+export async function GET(req: NextRequest) {
   const session = await auth();
   if (!session?.user?.householdId) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
@@ -54,7 +53,7 @@ export async function GET() {
     orderBy: { expiresAt: "desc" },
   });
 
-  const base = process.env.NEXTAUTH_URL ?? "";
+  const base = req.nextUrl.origin;
   return Response.json(links.map((l) => ({ ...l, url: `${base}/join/${l.token}` })));
 }
 

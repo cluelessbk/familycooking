@@ -121,9 +121,8 @@ export default function SettingsPage() {
         </div>
       </section>
 
-      {/* Invite link (owner only) */}
-      {userRole === "OWNER" && (
-        <section className="space-y-2">
+      {/* Every member can invite another person to the household. */}
+      <section className="space-y-2">
           <h2 className="text-base font-semibold text-foreground">Покани</h2>
           <div className="bg-card border border-border rounded-xl p-4 space-y-3">
             <p className="text-sm text-muted">
@@ -152,8 +151,7 @@ export default function SettingsPage() {
               </div>
             )}
           </div>
-        </section>
-      )}
+      </section>
 
       {userRole === "OWNER" && (
         <section className="space-y-2">

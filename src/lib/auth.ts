@@ -14,8 +14,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         inviteToken: { label: "Invite Token", type: "text" },
       },
       async authorize(credentials) {
-        const email = credentials.email as string | undefined;
+        const rawEmail = credentials.email as string | undefined;
         const code = credentials.code as string | undefined;
+        const email = rawEmail?.trim().toLowerCase();
 
         if (!email || !code) return null;
 
@@ -30,75 +31,56 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         if (!verificationToken) return null;
 
-        // Delete the used token
-        await prisma.verificationToken.delete({
-          where: {
-            identifier_token: {
-              identifier: email,
-              token: code,
-            },
-          },
+        const inviteToken = credentials.inviteToken as string | undefined;
+        const invite = inviteToken
+          ? await prisma.inviteLink.findFirst({
+              where: { token: inviteToken, expiresAt: { gt: new Date() } },
+              select: { householdId: true },
+            })
+          : null;
+        if (inviteToken && !invite) return null;
+
+        const user = await prisma.$transaction(async (tx) => {
+          let currentUser = await tx.user.findUnique({ where: { email } });
+          const existingMember = currentUser
+            ? await tx.householdMember.findUnique({ where: { userId: currentUser.id } })
+            : null;
+
+          // An invite is for registration, not for silently moving an existing
+          // account (and its data) between households.
+          if (invite && existingMember && existingMember.householdId !== invite.householdId) {
+            return null;
+          }
+
+          await tx.verificationToken.delete({
+            where: { identifier_token: { identifier: email, token: code } },
+          });
+
+          if (!currentUser) {
+            currentUser = await tx.user.create({
+              data: { email, emailVerified: new Date() },
+            });
+          }
+
+          if (invite && !existingMember) {
+            const consumed = await tx.inviteLink.deleteMany({
+              where: { token: inviteToken, expiresAt: { gt: new Date() } },
+            });
+            if (consumed.count !== 1) throw new Error("Invite already used");
+            await tx.householdMember.create({
+              data: { userId: currentUser.id, householdId: invite.householdId, role: "MEMBER" },
+            });
+          } else if (!existingMember) {
+            const household = await tx.household.create({ data: { name: "My Household" } });
+            await tx.householdMember.create({
+              data: { userId: currentUser.id, householdId: household.id, role: "OWNER" },
+            });
+          }
+
+          return currentUser;
         });
 
-        // Find or create user
-        let user = await prisma.user.findUnique({ where: { email } });
-        if (!user) {
-          user = await prisma.user.create({
-            data: { email, emailVerified: new Date() },
-          });
-        }
-
-        const inviteToken = credentials.inviteToken as string | undefined;
-
-        if (inviteToken) {
-          // Invite flow: join an existing household
-          const invite = await prisma.inviteLink.findUnique({
-            where: { token: inviteToken },
-            select: { householdId: true, expiresAt: true },
-          });
-
-          if (invite && invite.expiresAt > new Date()) {
-            const existingMember = await prisma.householdMember.findUnique({
-              where: { userId: user.id },
-              include: {
-                household: {
-                  select: {
-                    _count: { select: { recipes: true, mealPlans: true } },
-                  },
-                },
-              },
-            });
-
-            // If the user has an empty household (created on registration), delete it
-            if (existingMember) {
-              const counts = existingMember.household._count;
-              if (counts.recipes === 0 && counts.mealPlans === 0) {
-                await prisma.household.delete({ where: { id: existingMember.householdId } });
-              } else {
-                // Already has data — just switch membership
-                await prisma.householdMember.delete({ where: { userId: user.id } });
-              }
-            }
-
-            // Join the invited household
-            await prisma.householdMember.create({
-              data: { userId: user.id, householdId: invite.householdId, role: "MEMBER" },
-            });
-          }
-        } else {
-          // Normal flow: auto-create household if user doesn't have one
-          const existingMember = await prisma.householdMember.findUnique({
-            where: { userId: user.id },
-          });
-          if (!existingMember) {
-            const household = await prisma.household.create({
-              data: { name: "My Household" },
-            });
-            await prisma.householdMember.create({
-              data: { userId: user.id, householdId: household.id, role: "OWNER" },
-            });
-          }
-        }
+        if (!user) return null;
 
         return { id: user.id, email: user.email, name: user.name };
       },
@@ -112,17 +94,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.sub = user.id;
-        const member = await prisma.householdMember.findUnique({
-          where: { userId: user.id },
-          select: { householdId: true },
-        });
-        token.householdId = member?.householdId;
       }
+      const member = token.sub
+        ? await prisma.householdMember.findUnique({
+            where: { userId: token.sub },
+            select: { householdId: true, role: true },
+          })
+        : null;
+      token.householdId = member?.householdId;
+      token.householdRole = member?.role;
       return token;
     },
     async session({ session, token }) {
       session.user.id = token.sub!;
       session.user.householdId = token.householdId as string;
+      session.user.householdRole = token.householdRole as "OWNER" | "MEMBER";
       return session;
     },
   },

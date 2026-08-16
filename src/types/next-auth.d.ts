@@ -6,6 +6,7 @@ declare module "next-auth" {
       id: string;
       email: string;
       householdId: string;
+      householdRole: "OWNER" | "MEMBER";
       name?: string | null;
       image?: string | null;
     };
