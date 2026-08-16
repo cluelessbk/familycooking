@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ShareButton } from "@/components/recipes/ShareButton";
+import { AirFryerRecipePicker } from "@/components/recipes/AirFryerRecipePicker";
 
 interface Category {
   id: string;
@@ -35,6 +36,7 @@ function RecipesPageContent() {
   const [addingCategory, setAddingCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [savingCategory, setSavingCategory] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     fetch("/api/categories")
@@ -53,7 +55,7 @@ function RecipesPageContent() {
         setRecipes(data);
         setLoading(false);
       });
-  }, [activeCategoryId, airFryerOnly]);
+  }, [activeCategoryId, airFryerOnly, refreshKey]);
 
   async function saveCategory(e: React.FormEvent) {
     e.preventDefault();
@@ -100,14 +102,19 @@ function RecipesPageContent() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold text-foreground">Рецепти</h1>
-        <Link
-          href="/recipes/new"
-          className="bg-primary text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-primary-dark transition-colors"
-        >
-          + Добави рецепта
-        </Link>
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          {airFryerOnly && !loading && filteredRecipes.length > 0 && (
+            <AirFryerRecipePicker onSaved={() => { setLoading(true); setRefreshKey((key) => key + 1); }} />
+          )}
+          <Link
+            href="/recipes/new"
+            className="flex-1 sm:flex-none text-center bg-primary text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-primary-dark transition-colors"
+          >
+            + Добави рецепта
+          </Link>
+        </div>
       </div>
 
       {/* Search */}
@@ -195,12 +202,19 @@ function RecipesPageContent() {
       ) : filteredRecipes.length === 0 ? (
         <div className="text-center py-16">
           <p className="text-muted mb-4">Няма рецепти.</p>
-          <Link
-            href="/recipes/new"
-            className="bg-primary text-white rounded-lg px-5 py-2.5 text-sm font-medium hover:bg-primary-dark transition-colors"
-          >
-            Добави първата рецепта
-          </Link>
+          {airFryerOnly ? (
+            <AirFryerRecipePicker
+              prominent
+              onSaved={() => { setLoading(true); setRefreshKey((key) => key + 1); }}
+            />
+          ) : (
+            <Link
+              href="/recipes/new"
+              className="bg-primary text-white rounded-lg px-5 py-2.5 text-sm font-medium hover:bg-primary-dark transition-colors"
+            >
+              Добави първата рецепта
+            </Link>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

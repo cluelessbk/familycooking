@@ -4,7 +4,7 @@ Updated: 2026-08-16
 
 ## Current work
 
-Version 1.4.0 is implemented locally. Recipes now have an independent Air Fryer suitability flag, editable in both create and edit forms, visible as a badge, preserved when recipes are copied, and filterable together with any category. A global mobile form-control rule prevents iOS Safari's automatic focus zoom by keeping editable controls at a minimum 16px font size on phone widths.
+Version 1.4.1 is implemented locally. In addition to the Air Fryer suitability flag and filter from v1.4.0, the Air Fryer list now has a searchable multi-select picker. It preselects current Air Fryer recipes and saves additions/removals in one household-scoped operation. The picker replaces the empty-state new-recipe action while the Air Fryer filter is active and remains available when the list has recipes.
 
 ## Verification
 
@@ -13,7 +13,9 @@ Version 1.4.0 is implemented locally. Recipes now have an independent Air Fryer 
 - Next.js 16.2.1 production build and TypeScript validation pass.
 - `git diff --check` passes.
 - The mobile fix covers all `input`, `textarea`, and `select` controls globally, while excluding checkbox and radio controls.
+- The v1.4.1 production build, TypeScript validation, targeted ESLint, and `git diff --check` pass.
+- Bulk updates are restricted to recipe IDs in the signed-in user's household.
 
 ## Next action
 
-Push and deploy v1.4.0 after Rumen's approval, then verify the production migration and Air Fryer API filter.
+Rumen should review v1.4.1 at `https://familycooking-af-preview.vercel.app`. If approved, push the two local commits and deploy/promote v1.4.1 to production. Production remains on v1.3.1 until explicit approval.
