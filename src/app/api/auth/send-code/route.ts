@@ -39,7 +39,14 @@ export async function POST(req: NextRequest) {
   });
 
   if (recent) {
-    return Response.json({ error: "Too many requests" }, { status: 429 });
+    const retryAfter = Math.max(
+      1,
+      Math.ceil((recent.expires.getTime() - Date.now()) / 1000),
+    );
+    return Response.json(
+      { error: "Code already active", codeActive: true, retryAfter },
+      { status: 429, headers: { "Retry-After": String(retryAfter) } },
+    );
   }
 
   // Delete any existing tokens for this email

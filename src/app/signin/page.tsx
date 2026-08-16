@@ -36,6 +36,13 @@ function SignInForm() {
       });
 
       if (res.status === 429) {
+        const data = await res.json().catch(() => null);
+        if (data?.codeActive) {
+          setStep("code");
+          setCooldown(data.retryAfter ?? 5 * 60);
+          setError("Вече има активен код за този имейл. Въведи последния код, който получи.");
+          return;
+        }
         setError("Изчакай малко преди да изпратиш нов код.");
         return;
       }
@@ -147,6 +154,14 @@ function SignInForm() {
                 className="w-full py-3 rounded-lg bg-primary text-white font-medium hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? "Изпращане..." : "Изпрати код"}
+              </button>
+              <button
+                type="button"
+                onClick={() => { setStep("code"); setError(""); }}
+                disabled={!email.trim() || loading}
+                className="w-full text-sm text-muted hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Вече имам код
               </button>
             </form>
           </>
